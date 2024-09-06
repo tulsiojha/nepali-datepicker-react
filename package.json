@@ -1,0 +1,102 @@
+{
+  "name": "@zener/react-nepali-datepicker",
+  "author": "Bikash Ojha",
+  "license": "MIT",
+  "version": "3.0.0",
+  "description": "The React Select is a minimal select component for reactjs.",
+  "private": false,
+  "types": "./dist/@types/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "sideEffects": false,
+  "exports": {
+    "./index.css": {
+      "import": "./dist/index.css",
+      "require": "./dist/index.css"
+    },
+    ".": {
+      "import": {
+        "types": "./dist/@types/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/@types/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/opensource-hq/react-select.git"
+  },
+  "keywords": [
+    "react",
+    "select",
+    "control",
+    "form",
+    "options",
+    "combo-box",
+    "ui",
+    "multi-select"
+  ],
+  "files": ["dist", "README.md", "LICENSE"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "npm run clean && npm run build:css && node build.js && npm run tsc",
+    "pack": "npm run build && npm pack --pack-destination ./out",
+    "clean": "rimraf dist",
+    "dev:build": "npm run build",
+    "tsc": "tsc --emitDeclarationOnly -p tsconfig-compile.json --outDir ./dist/@types",
+    "build:css": "tailwindcss -i ./src/scss/build.scss -o ./src/css/index.scss",
+    "release": "pnpm build && npm publish"
+  },
+  "peerDependencies": {
+    "@radix-ui/react-portal": "^1.1.1",
+    "classnames": "^2.3.2",
+    "framer-motion": "^10.16.4",
+    "react": "^18.2.0 || ^17.0.0 || ^16.0.0"
+  },
+  "devDependencies": {
+    "@radix-ui/react-dialog": "^1.1.1",
+    "@types/react": "^18.2.22",
+    "@types/react-dom": "^18.2.14",
+    "@typescript-eslint/eslint-plugin": "^6.4.1",
+    "@typescript-eslint/parser": "^6.4.1",
+    "esbuild": "^0.19.2",
+    "esbuild-sass-plugin": "^2.16.0",
+    "eslint": "^8.47.0",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-import-resolver-jsconfig": "^1.1.0",
+    "eslint-import-resolver-node": "^0.3.6",
+    "eslint-import-resolver-typescript": "^3.6.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prefer-arrow-functions": "^3.1.4",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "prettier": "^2.8.8",
+    "react-dom": "^18.2.0",
+    "react-scripts": "^5.0.1",
+    "rimraf": "^5.0.1",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^5.2.2"
+  },
+  "browserslist": {
+    "production": [">0.2%", "not dead", "not op_mini all"],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/opensource-hq/react-select/issues"
+  },
+  "homepage": "https://react-select.ojhabikash.com.np/",
+  "dependencies": {}
+}

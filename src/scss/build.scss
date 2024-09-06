@@ -1,0 +1,38 @@
+@tailwind utilities;
+@tailwind base;
+
+.zener-date-picker,
+.zener-date-picker * {
+  scroll-behavior: unset !important;
+}
+
+.zener-date-picker svg {
+  display: block;
+}
+
+.zener-date-picker button {
+  cursor: pointer;
+  -webkit-appearance: button;
+  background-color: transparent;
+  background-image: none;
+  border: none;
+}
+
+.zener-date-picker input,
+.zener-date-picker button {
+  font-family: inherit;
+  /* 1 */
+  -webkit-font-feature-settings: inherit;
+  font-feature-settings: inherit;
+  /* 1 */
+  font-variation-settings: inherit;
+  /* 1 */
+  font-size: 100%;
+  /* 1 */
+  font-weight: inherit;
+  /* 1 */
+  line-height: inherit;
+  /* 1 */
+  margin: 0;
+  /* 2 */
+}
