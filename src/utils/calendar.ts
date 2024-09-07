@@ -1,4 +1,4 @@
-import { baishakOne, startDateAD, startDateBS, yearMonthDays } from "./data";
+import { baishakOne, startDateAD, startDateBS, yearMonthDays } from './data';
 
 type IDate = {
   year: number;
@@ -10,7 +10,7 @@ const toInt = (value: number) => ~~value;
 const yearDivider = 10000;
 const monthDivider = 100;
 
-const padTwo = (v: number) => `${v}`.padStart(2, "0");
+const padTwo = (v: number) => `${v}`.padStart(2, '0');
 
 export const stringDateFormatter = ({ year, month, date }: IDate) =>
   `${year}-${padTwo(month)}-${padTwo(date)}`;
@@ -48,21 +48,30 @@ const getDays = (a: Date, b: Date) =>
 
 const nepaliDateExtractor = (datestring: string) => {
   if (!datestring) {
-    throw new Error("Invalid Date");
+    throw new Error('Invalid Date');
   }
 
-  const datesplit = datestring.split("-");
+  const startBSDate = getDateFromNumber(startDateBS);
+
+  const datesplit = datestring.split('-');
 
   if (datesplit.length !== 3) {
-    throw new Error("Invalid Date");
+    throw new Error('Invalid Date');
   }
 
-  const year = parseInt(datesplit[0]);
-  const month = parseInt(datesplit[1]);
-  const date = parseInt(datesplit[2]);
+  const year = parseInt(datesplit[0], 10);
+  const month = parseInt(datesplit[1], 10);
+  const date = parseInt(datesplit[2], 10);
 
-  if (year < 1000 || date === 0 || month > 12) {
-    throw new Error("Invalid Date");
+  if (
+    year < startBSDate.year ||
+    year > startBSDate.year + yearMonthDays.length - 1 ||
+    date <= 0 ||
+    date > 32 ||
+    month > 12 ||
+    month < 0
+  ) {
+    throw new Error('Invalid Date');
   }
 
   return { year, month, date };
@@ -112,7 +121,7 @@ export const findBSfromAD = (date: string) => {
 
   // for nepali year if days are negative it means we are in different quarter of english year, so we need to go to previous quarter
   if (days < 0) {
-    yearIndex = yearIndex - 1;
+    yearIndex -= 1;
 
     baishakOneInADForGivenYear = getDateFromNumber(baishakOne[yearIndex]);
 
@@ -122,14 +131,23 @@ export const findBSfromAD = (date: string) => {
     days = getDays(d, dateForBaishakOneInADForGivenYear);
   }
 
+  const startBSDate = getDateFromNumber(startDateBS);
+  if (
+    yearIndex + startBSDate.year >
+      startBSDate.year + yearMonthDays.length - 1 ||
+    yearIndex + startBSDate.year < startBSDate.year
+  ) {
+    throw new Error('Invalid date');
+  }
+
   const currentBSYearMonths = yearMonthDays[yearIndex];
 
   let totalMonths = 0;
   let totalDays = 0;
   for (let x = 0; x < days; x++) {
-    totalDays = totalDays + 1;
+    totalDays += 1;
     if (totalDays > currentBSYearMonths[totalMonths]) {
-      totalMonths = totalMonths + 1;
+      totalMonths += 1;
       totalDays = 1;
       continue;
     }
@@ -148,41 +166,41 @@ export const findBSfromAD = (date: string) => {
   };
 };
 
-export const getCurrentDate = ({ type = "np" }: { type?: "en" | "np" }) => {
+export const getCurrentDate = ({ type = 'np' }: { type?: 'en' | 'np' }) => {
   const date = new Date();
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
   };
 
   switch (type) {
-    case "en":
+    case 'en':
       return {
         year: date.getFullYear(),
         month: date.getMonth(),
         date: date.getDate(),
         day: date.getDay(),
       };
-    case "np":
+    case 'np':
     default:
       return { ...findBSfromAD(formatDate(date)), day: date.getDay() };
   }
 };
 
 export const getMonthInfo = ({
-  type = "np",
+  type = 'np',
   year,
   month,
 }: {
-  type?: "en" | "np";
+  type?: 'en' | 'np';
   year: number;
   month: number;
 }) => {
   if (month > 12 || month < 0) {
-    throw new Error("Invalid month");
+    throw new Error('Invalid month');
   }
 
   const getPrevMonthDays = (yearIndex = 0) => {
@@ -218,7 +236,7 @@ export const getMonthInfo = ({
   };
 
   switch (type) {
-    case "en":
+    case 'en': {
       const date = new Date(year, month + 1, 0);
       return {
         currentMonthDays: date.getDate(),
@@ -228,9 +246,9 @@ export const getMonthInfo = ({
         prevMonthDays: 0,
         nextMonthDays: 0,
       };
-
-    case "np":
-    default:
+    }
+    case 'np':
+    default: {
       const yearIndex = getBSYearIndexFromBS(year);
       const engYear = findADfromBS(
         stringDateFormatter({ year, month, date: 1 }),
@@ -243,6 +261,7 @@ export const getMonthInfo = ({
         currentMonthDays: yearMonthDays[yearIndex][month - 1],
         firstWeekDay,
       };
+    }
   }
 };
 
@@ -253,19 +272,19 @@ export const groupDates = (
   let x = 1;
   const items = Array.from({ length: 42 }, (_, i) => {
     let day = i + 1 - monthInfo.firstWeekDay;
-    let month = "current";
+    let month = 'current';
     if (day <= 0) {
       day = monthInfo.prevMonthDays + day;
-      month = "prev";
+      month = 'prev';
     } else if (day > monthInfo.currentMonthDays) {
       day = x;
       x += 1;
-      month = "next";
+      month = 'next';
     }
     return { day, month, currentMonth: monthInfo.currentMonth };
   }) as {
     day: number;
-    month: "current" | "prev" | "next";
+    month: 'current' | 'prev' | 'next';
     currentMonth: number;
   }[]; // Replace with your actual data
 
@@ -283,8 +302,8 @@ export const getYearsArray = (startYear: number) => {
 };
 
 export const getDecadeRange = (year: number) => {
-  let start = Math.floor(year / 10) * 10;
-  let end = start + 9;
+  const start = Math.floor(year / 10) * 10;
+  const end = start + 9;
   return { start, end };
 };
 
@@ -292,17 +311,16 @@ export const reg = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[012])$/;
 
 export const parseDateFromString = (date: string) => {
   if (reg.test(date)) {
-    const dd = date.split("-");
+    const dd = date.split('-');
     if (dd.length !== 3) {
-      return;
+      return { date: 1, year: 2000, month: 0 };
     }
 
-    const y = parseInt(dd[0]);
-    const m = parseInt(dd[1]);
-    const d = parseInt(dd[2]);
+    const y = parseInt(dd[0], 10);
+    const m = parseInt(dd[1], 10);
+    const d = parseInt(dd[2], 10);
 
     return { date: d, year: y, month: m };
-  } else {
-    throw new Error("Invalid date.");
   }
+  return null;
 };

@@ -38,16 +38,30 @@
   min-height: 24px;
 }
 
+.zener-min-h-\[26px\] {
+  min-height: 26px;
+}
+
 .zener-w-\[28px\] {
   width: 28px;
+}
+
+.zener-w-fit {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
 }
 
 .zener-w-full {
   width: 100%;
 }
 
-.zener-min-w-\[50px\] {
-  min-width: 50px;
+.zener-min-w-\[122px\] {
+  min-width: 122px;
+}
+
+.zener-flex-1 {
+  flex: 1 1 0%;
 }
 
 .zener-border-collapse {
@@ -115,6 +129,11 @@
   border-color: rgb(29 34 117 / var(--tw-border-opacity));
 }
 
+.zener-border-blue-400 {
+  --tw-border-opacity: 1;
+  border-color: rgb(96 165 250 / var(--tw-border-opacity));
+}
+
 .zener-border-stone-100 {
   --tw-border-opacity: 1;
   border-color: rgb(245 245 244 / var(--tw-border-opacity));
@@ -130,9 +149,24 @@
   border-bottom-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
 
+.zener-border-b-gray-500 {
+  --tw-border-opacity: 1;
+  border-bottom-color: rgb(107 114 128 / var(--tw-border-opacity));
+}
+
 .zener-border-t-gray-300 {
   --tw-border-opacity: 1;
   border-top-color: rgb(209 213 219 / var(--tw-border-opacity));
+}
+
+.zener-border-t-gray-500 {
+  --tw-border-opacity: 1;
+  border-top-color: rgb(107 114 128 / var(--tw-border-opacity));
+}
+
+.zener-bg-\[\#020408\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(2 4 8 / var(--tw-bg-opacity));
 }
 
 .zener-bg-\[\#1D2275\] {
@@ -142,6 +176,20 @@
 
 .zener-bg-black\/5 {
   background-color: rgb(0 0 0 / 0.05);
+}
+
+.zener-bg-blue-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(96 165 250 / var(--tw-bg-opacity));
+}
+
+.zener-bg-gray-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(55 65 81 / var(--tw-bg-opacity));
+}
+
+.zener-bg-transparent {
+  background-color: transparent;
 }
 
 .zener-bg-white {
@@ -161,11 +209,6 @@
   padding: 0.75rem;
 }
 
-.zener-px-1 {
-  padding-left: 0.25rem;
-  padding-right: 0.25rem;
-}
-
 .zener-px-1\.5 {
   padding-left: 0.375rem;
   padding-right: 0.375rem;
@@ -174,11 +217,6 @@
 .zener-px-2 {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
-}
-
-.zener-py-0 {
-  padding-top: 0px;
-  padding-bottom: 0px;
 }
 
 .zener-py-0\.5 {
@@ -201,7 +239,7 @@
 }
 
 .zener-font-sans {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 .\!zener-text-sm {
@@ -222,6 +260,10 @@
   font-weight: 600;
 }
 
+.zener-font-thin {
+  font-weight: 100;
+}
+
 .zener-text-\[\#1D2275\] {
   --tw-text-opacity: 1;
   color: rgb(29 34 117 / var(--tw-text-opacity));
@@ -236,6 +278,11 @@
   color: rgb(0 0 0 / 0.25);
 }
 
+.zener-text-blue-400 {
+  --tw-text-opacity: 1;
+  color: rgb(96 165 250 / var(--tw-text-opacity));
+}
+
 .zener-text-gray-300 {
   --tw-text-opacity: 1;
   color: rgb(209 213 219 / var(--tw-text-opacity));
@@ -246,9 +293,22 @@
   color: rgb(156 163 175 / var(--tw-text-opacity));
 }
 
+.zener-text-gray-500 {
+  --tw-text-opacity: 1;
+  color: rgb(107 114 128 / var(--tw-text-opacity));
+}
+
+.zener-text-inherit {
+  color: inherit;
+}
+
 .zener-text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.zener-opacity-80 {
+  opacity: 0.8;
 }
 
 .zener-shadow-menu {
@@ -260,6 +320,12 @@
 .zener-outline-none {
   outline: 2px solid transparent;
   outline-offset: 2px;
+}
+
+.zener-transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
 
 .zener-transition-none {
@@ -314,6 +380,10 @@
   --tw-backdrop-opacity:  ;
   --tw-backdrop-saturate:  ;
   --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
 }
 
 ::-webkit-backdrop {
@@ -364,6 +434,10 @@
   --tw-backdrop-opacity:  ;
   --tw-backdrop-saturate:  ;
   --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
 }
 
 ::backdrop {
@@ -414,6 +488,10 @@
   --tw-backdrop-opacity:  ;
   --tw-backdrop-saturate:  ;
   --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
 }
 
 .zener-date-picker,
@@ -452,14 +530,49 @@
   /* 2 */
 }
 
+.focus-within\:zener-ring-1:focus-within {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.focus-within\:zener-ring-blue-400:focus-within {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(96 165 250 / var(--tw-ring-opacity));
+}
+
+.focus-within\:zener-ring-sky-400:focus-within {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(56 189 248 / var(--tw-ring-opacity));
+}
+
 .hover\:zener-bg-gray-100:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(243 244 246 / var(--tw-bg-opacity));
 }
 
+.hover\:zener-bg-gray-700:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(55 65 81 / var(--tw-bg-opacity));
+}
+
 .hover\:zener-text-black:hover {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
+}
+
+.hover\:zener-text-blue-300:hover {
+  --tw-text-opacity: 1;
+  color: rgb(147 197 253 / var(--tw-text-opacity));
+}
+
+.hover\:zener-text-gray-300:hover {
+  --tw-text-opacity: 1;
+  color: rgb(209 213 219 / var(--tw-text-opacity));
+}
+
+.hover\:zener-opacity-100:hover {
+  opacity: 1;
 }
 
 .focus\:zener-ring-1:focus {
@@ -473,12 +586,27 @@
   --tw-ring-color: rgb(96 165 250 / var(--tw-ring-opacity));
 }
 
+.focus\:zener-ring-sky-400:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(56 189 248 / var(--tw-ring-opacity));
+}
+
 .disabled\:zener-text-gray-200:disabled {
   --tw-text-opacity: 1;
   color: rgb(229 231 235 / var(--tw-text-opacity));
 }
 
+.disabled\:zener-text-gray-600:disabled {
+  --tw-text-opacity: 1;
+  color: rgb(75 85 99 / var(--tw-text-opacity));
+}
+
 .zener-group:hover .group-hover\:zener-bg-gray-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+}
+
+.zener-group:hover .group-hover\:zener-bg-gray-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(55 65 81 / var(--tw-bg-opacity));
 }

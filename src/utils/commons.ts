@@ -1,5 +1,5 @@
-import classNames from "classnames";
-import { NEPALI_DIGITS } from "./data";
+import classNames from 'classnames';
+import { NEPALI_DIGITS } from './data';
 
 type Icn = (string | { [key: string]: boolean } | undefined)[];
 
@@ -10,21 +10,21 @@ export const cn = (...props: Icn) => {
 export const engToNepaliNumber = (number: number) => {
   return number
     .toString()
-    .split("")
+    .split('')
     .map((n) => NEPALI_DIGITS[n as keyof typeof NEPALI_DIGITS])
-    .join("");
+    .join('');
 };
 
 export const engToNepNumberFullDate = (date: string) => {
   return date
-    .split("")
+    .split('')
     .map((d) => {
-      if (d !== "-") {
+      if (d !== '-') {
         return NEPALI_DIGITS[d as keyof typeof NEPALI_DIGITS];
       }
-      return "-";
+      return '-';
     })
-    .join("");
+    .join('');
 };
 
 export const groupArray = (array: any[], groupSize: number) => {
@@ -41,7 +41,7 @@ export const groupIntoPages = (
   rowsPerPage = 4,
 ) => {
   const elementsPerPage = elementsPerRow * rowsPerPage; // 12 elements per page
-  let pages = [];
+  const pages = [];
 
   // Loop through the array and slice into pages
   for (let i = 0; i < array.length; i += elementsPerPage) {
