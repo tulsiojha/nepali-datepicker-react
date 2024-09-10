@@ -3,11 +3,13 @@ import { RefObject, useEffect, useMemo, useState } from 'react';
 import { Portal } from '@radix-ui/react-portal';
 import { IBounds } from '../utils/use-bounds';
 import {
+  findADfromBS,
   getDateFromNumber,
   getDecadeRange,
   getMonthInfo,
   getYearsArray,
   groupDates,
+  stringDateFormatter,
 } from '../utils/calendar';
 import {
   cn,
@@ -16,6 +18,8 @@ import {
   groupArray,
 } from '../utils/commons';
 import {
+  AD_MONTH,
+  AD_MONTH_NEPALI,
   ENGLISH_NEPALI_MONTH,
   ENGLISH_WEEK,
   NEPALI_MONTH,
@@ -25,22 +29,35 @@ import {
   yearMonthDays,
 } from '../utils/data';
 import { NextIcon, PreviousIcon } from '../icons';
-import { IBaseType } from './nepali-date-picker';
+import { DateTypeMap, IBaseType } from './nepali-date-picker';
 import { NepaliDate } from '../utils/nepali-date-picker';
 
 type ISelectionMode = 'day' | 'month' | 'year';
 
-interface IMenu extends IBaseType {
+interface IMenu<T extends keyof DateTypeMap | undefined = 'BS'>
+  extends IBaseType<T> {
   show: boolean;
   bounds: IBounds;
   portalRef: RefObject<HTMLDivElement>;
-  today: NepaliDate;
-  selectedDate?: NepaliDate;
+  today: NepaliDate | Date;
+  selectedDate?: NepaliDate | Date | null;
   onNextMonth: () => void;
   onPrevMonth: () => void;
 }
 
-const Menu = ({
+const getStartYear = () =>
+  findADfromBS(stringDateFormatter(getDateFromNumber(startDateBS)));
+const getEndYear = () =>
+  findADfromBS(
+    stringDateFormatter({
+      year: getDateFromNumber(startDateBS).year + yearMonthDays.length - 1,
+      month: 12,
+      date: yearMonthDays[yearMonthDays.length - 1][11],
+    }),
+  );
+
+const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
+  type,
   show,
   bounds,
   portalRef,
@@ -54,7 +71,8 @@ const Menu = ({
   calendarClassName,
   portalClassName,
   components,
-}: IMenu) => {
+  converterMode,
+}: IMenu<T>) => {
   const [selectionMode, setSelectionMode] = useState<ISelectionMode>('day');
   const [currentYearRangeIndex, setCurrentYearRangeIndex] = useState(0);
   const [days, setDays] = useState<
@@ -65,6 +83,11 @@ const Menu = ({
     month: number;
   }>();
 
+  const [adDateRangeForConverter, setAdDateRangeForConverter] = useState({
+    start: getStartYear(),
+    end: getEndYear(),
+  });
+
   const todayText = lang === 'en' ? 'Today' : NEPALI_TODAY;
 
   const changeMonth = ({ m, y }: { m: number; y: number }) => {
@@ -72,6 +95,7 @@ const Menu = ({
       year: y,
       // since month index start from 0 but getMonthInfo requires index from 1
       month: m + 1,
+      type,
     });
 
     const gD = groupDates({
@@ -90,6 +114,10 @@ const Menu = ({
   };
 
   useEffect(() => {
+    setAdDateRangeForConverter({ start: getStartYear(), end: getEndYear() });
+  }, []);
+
+  useEffect(() => {
     setSelectionMode('day');
   }, [show]);
 
@@ -97,7 +125,7 @@ const Menu = ({
     if (today || selectedDate) {
       let y = 0;
       let m = 0;
-      if (!!selectedDate) {
+      if (selectedDate) {
         m = selectedDate.getMonth() as number;
         y = selectedDate.getFullYear() as number;
       } else if (today) {
@@ -111,6 +139,9 @@ const Menu = ({
   const canGoNextYear = () => {
     if (!selectedMonthYear) {
       return false;
+    }
+    if (type === 'AD') {
+      return true;
     }
 
     const startBSYear = getDateFromNumber(startDateBS).year;
@@ -140,8 +171,16 @@ const Menu = ({
   };
 
   const canGoPrevYear = () => {
+    if (!selectedMonthYear) {
+      return false;
+    }
+
+    if (type === 'AD') {
+      return true;
+    }
+
     const startBSYear = getDateFromNumber(startDateBS).year;
-    const y = (selectedMonthYear?.year || 0) - 1;
+    const y = (selectedMonthYear.year || 0) - 1;
 
     if (y >= startBSYear) {
       return true;
@@ -162,6 +201,9 @@ const Menu = ({
   };
 
   const canGoNextDecade = () => {
+    if (type === 'AD') {
+      return true;
+    }
     const startBSYear = getDateFromNumber(startDateBS).year;
     const endBSYear = startBSYear + yearMonthDays.length - 1;
     if (currentYearRangeIndex < getDecadeRange(endBSYear).start) {
@@ -171,6 +213,9 @@ const Menu = ({
   };
 
   const canGoPrevDecade = () => {
+    if (type === 'AD') {
+      return true;
+    }
     const startBSYear = getDateFromNumber(startDateBS).year;
     if (currentYearRangeIndex > startBSYear) {
       return true;
@@ -191,6 +236,9 @@ const Menu = ({
   };
 
   const canGoPrevMonth = () => {
+    if (type === 'AD') {
+      return true;
+    }
     const startBSYear = getDateFromNumber(startDateBS);
 
     if (selectedMonthYear) {
@@ -206,6 +254,9 @@ const Menu = ({
   };
 
   const canGoNextMonth = () => {
+    if (type === 'AD') {
+      return true;
+    }
     const startBSYear = getDateFromNumber(startDateBS);
     const endBSYear = startBSYear.year + yearMonthDays.length - 1;
 
@@ -292,22 +343,60 @@ const Menu = ({
     );
   };
 
-  const handleOnChange = (month: string, date: number) => {
+  const checkDayDisabledInBs = (month: string) => {
     if (!selectedMonthYear) {
-      return;
+      return true;
     }
+
     const startBSYear = getDateFromNumber(startDateBS);
     const endBSYear = startBSYear.year + yearMonthDays.length - 1;
 
     let m = selectedMonthYear.month;
     let y = selectedMonthYear.year;
 
+    if (type === 'BS') {
+      switch (month) {
+        case 'next': {
+          if (m > 10) {
+            y += 1;
+            if (y > endBSYear) {
+              return true;
+            }
+          }
+          return false;
+        }
+        case 'prev': {
+          m -= 1;
+          if (m < 0) {
+            y -= 1;
+            if (y < startBSYear.year) {
+              return true;
+            }
+          }
+          return false;
+        }
+        default:
+          return false;
+      }
+    }
+    return false;
+  };
+
+  const handleOnChange = (month: string, date: number) => {
+    if (!selectedMonthYear) {
+      return;
+    }
+
+    let m = selectedMonthYear.month;
+    let y = selectedMonthYear.year;
+
+    if (checkDayDisabledInBs(month)) {
+      return;
+    }
+
     if (month === 'next') {
       if (m > 10) {
         y += 1;
-        if (y > endBSYear) {
-          return;
-        }
         m = 0;
       } else {
         m += 1;
@@ -317,23 +406,27 @@ const Menu = ({
       if (m < 0) {
         m = 11;
         y -= 1;
-        if (y < startBSYear.year) {
-          y = startBSYear.year;
-        }
       }
     }
 
-    onChange?.(new NepaliDate(y, m, date));
+    onChange?.(
+      // @ts-ignore
+      type === 'BS' ? new NepaliDate(y, m, date) : new Date(y, m, date),
+    );
   };
 
   const getSelectionContent = useMemo(() => {
     const num_columns = 3;
     switch (selectionMode) {
       case 'month': {
-        const monthArray = groupArray(
-          lang === 'en' ? ENGLISH_NEPALI_MONTH : NEPALI_MONTH,
-          num_columns,
-        );
+        const getMonths = () => {
+          if (type === 'BS') {
+            return lang === 'en' ? ENGLISH_NEPALI_MONTH : NEPALI_MONTH;
+          } else {
+            return lang === 'en' ? AD_MONTH : AD_MONTH_NEPALI;
+          }
+        };
+        const monthArray = groupArray(getMonths(), num_columns);
         const getMonthIndex = (index: number, mIndex: number) =>
           index * num_columns + mIndex;
 
@@ -345,37 +438,98 @@ const Menu = ({
           setSelectionMode('day');
         };
 
+        const isMonthDisabled = (month: number) => {
+          if (!converterMode) {
+            return false;
+          }
+
+          if (type === 'BS') {
+            return false;
+          }
+
+          if (!selectedMonthYear) {
+            return true;
+          }
+
+          if (
+            selectedMonthYear.year < adDateRangeForConverter.start.year ||
+            selectedMonthYear.year > adDateRangeForConverter.end.year
+          ) {
+            return true;
+          }
+
+          if (
+            selectedMonthYear.year === adDateRangeForConverter.start.year ||
+            selectedMonthYear.year === adDateRangeForConverter.end.year
+          ) {
+            if (
+              (selectedMonthYear.year === adDateRangeForConverter.start.year &&
+                month < adDateRangeForConverter.start.month) ||
+              (selectedMonthYear.year === adDateRangeForConverter.end.year &&
+                month > adDateRangeForConverter.end.month)
+            ) {
+              return true;
+            }
+            return false;
+          }
+          return false;
+        };
+
         return (
           <tbody>
             {monthArray.map((ma, index) => {
               const i = index;
               return (
                 <tr key={i}>
-                  {ma.map((m, mIndex) => (
-                    <td key={m}>
-                      {components?.month ? (
-                        components.month({
-                          onClick: () => onMonthClicked(index, mIndex),
-                          monthText: m,
-                          monthNumber: getMonthIndex(index, mIndex),
-                          year: selectedMonthYear?.year || 0,
-                        })
-                      ) : (
-                        <div
-                          className="zener-text-center zener-p-3 zener-group zener-cursor-pointer"
-                          onClick={() => onMonthClicked(index, mIndex)}
-                        >
+                  {ma.map((m, mIndex) => {
+                    const monthIndex = getMonthIndex(index, mIndex);
+                    const monthDisabled = isMonthDisabled(monthIndex);
+                    return (
+                      <td key={m}>
+                        {components?.month ? (
+                          components.month({
+                            onClick: () =>
+                              !monthDisabled
+                                ? onMonthClicked(index, mIndex)
+                                : null,
+                            monthText: m,
+                            monthNumber: monthIndex,
+                            year: selectedMonthYear?.year || 0,
+                            isDisabled: monthDisabled,
+                          })
+                        ) : (
                           <div
                             className={cn(
-                              'zener-text-sm zener-flex zener-items-center zener-justify-center zener-h-[28px] zener-rounded group-hover:zener-bg-gray-100 zener-text-black',
+                              'zener-text-center zener-p-3 zener-group',
+                              {
+                                'zener-cursor-pointer': !monthDisabled,
+                                'zener-cursor-default': monthDisabled,
+                              },
                             )}
+                            onClick={() =>
+                              !monthDisabled
+                                ? onMonthClicked(index, mIndex)
+                                : null
+                            }
                           >
-                            {m}
+                            <div
+                              className={cn(
+                                'zener-text-sm zener-flex zener-items-center zener-justify-center zener-h-[28px] zener-rounded',
+
+                                {
+                                  'group-hover:zener-bg-gray-100 zener-text-black':
+                                    !monthDisabled,
+                                  'zener-text-gray-300': monthDisabled,
+                                },
+                              )}
+                            >
+                              {m}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </td>
-                  ))}
+                        )}
+                      </td>
+                    );
+                  })}
                 </tr>
               );
             })}
@@ -398,6 +552,22 @@ const Menu = ({
           });
           setSelectionMode('month');
         };
+
+        const isYearDisabled = (year: number) => {
+          if (!converterMode) {
+            return false;
+          }
+          if (type === 'BS') {
+            return false;
+          }
+          if (
+            year < adDateRangeForConverter.start.year ||
+            year > adDateRangeForConverter.end.year
+          ) {
+            return true;
+          }
+          return false;
+        };
         return (
           <tbody>
             {groupedYears.map((ma, index) => {
@@ -406,23 +576,44 @@ const Menu = ({
                 <tr key={i}>
                   {ma.map((m, mIndex) => {
                     const yearText = lang === 'en' ? m : engToNepaliNumber(m);
+                    const indexNumber =
+                      getYearIndex(index, mIndex) + range.start;
+                    const yearDisabled = isYearDisabled(indexNumber);
                     return (
                       <td key={m}>
                         {components?.year ? (
                           components.year({
-                            onClick: () => onYearClicked(index, mIndex),
+                            onClick: () =>
+                              !yearDisabled
+                                ? onYearClicked(index, mIndex)
+                                : null,
                             yearText,
-                            yearNumber:
-                              getYearIndex(index, mIndex) + range.start,
+                            yearNumber: indexNumber,
+                            isDisabled: yearDisabled,
                           })
                         ) : (
                           <div
-                            className="zener-text-center zener-p-3 zener-group zener-cursor-pointer"
-                            onClick={() => onYearClicked}
+                            className={cn(
+                              'zener-text-center zener-p-3 zener-group',
+                              {
+                                'zener-cursor-pointer': !yearDisabled,
+                                'zener-cursor-default': yearDisabled,
+                              },
+                            )}
+                            onClick={() =>
+                              !yearDisabled
+                                ? onYearClicked(index, mIndex)
+                                : null
+                            }
                           >
                             <div
                               className={cn(
-                                'zener-text-sm zener-flex zener-items-center zener-justify-center zener-h-[28px] zener-rounded group-hover:zener-bg-gray-100 zener-text-black',
+                                'zener-text-sm zener-flex zener-items-center zener-justify-center zener-h-[28px] zener-rounded',
+                                {
+                                  'group-hover:zener-bg-gray-100 zener-text-black':
+                                    !yearDisabled,
+                                  'zener-text-gray-300': yearDisabled,
+                                },
                               )}
                             >
                               {yearText}
@@ -442,6 +633,65 @@ const Menu = ({
       default: {
         const onDayClicked = (month: string, date: number) =>
           handleOnChange(month, date);
+
+        const isDayDisabled = (
+          day: number,
+          month: 'current' | 'prev' | 'next',
+        ) => {
+          if (type === 'BS') {
+            return checkDayDisabledInBs(month);
+          }
+
+          if (!converterMode) {
+            return false;
+          }
+
+          if (!selectedMonthYear) {
+            return true;
+          }
+
+          if (
+            selectedMonthYear.year < adDateRangeForConverter.start.year ||
+            selectedMonthYear.year > adDateRangeForConverter.end.year
+          ) {
+            return true;
+          }
+
+          if (
+            selectedMonthYear.year === adDateRangeForConverter.start.year ||
+            selectedMonthYear.year === adDateRangeForConverter.end.year
+          ) {
+            if (
+              (selectedMonthYear.year === adDateRangeForConverter.start.year &&
+                selectedMonthYear.month <
+                  adDateRangeForConverter.start.month) ||
+              (selectedMonthYear.year === adDateRangeForConverter.end.year &&
+                selectedMonthYear.month > adDateRangeForConverter.end.month)
+            ) {
+              return true;
+            }
+
+            if (
+              (selectedMonthYear.year === adDateRangeForConverter.start.year &&
+                selectedMonthYear.month ===
+                  adDateRangeForConverter.start.month &&
+                ((day < adDateRangeForConverter.start.date &&
+                  month === 'current') ||
+                  month === 'prev')) ||
+              (selectedMonthYear.year === adDateRangeForConverter.end.year &&
+                selectedMonthYear.month === adDateRangeForConverter.end.month &&
+                adDateRangeForConverter.start.month &&
+                ((day > adDateRangeForConverter.end.date &&
+                  month === 'current') ||
+                  month === 'next'))
+            ) {
+              return true;
+            }
+
+            return false;
+          }
+          return false;
+        };
         return (
           <>
             <thead>
@@ -471,6 +721,9 @@ const Menu = ({
                       const isToday = isTodayDate(dd.day);
                       const dateText =
                         lang === 'en' ? dd.day : engToNepaliNumber(dd.day);
+
+                      const dayDisabled = isDayDisabled(dd.day, dd.month);
+
                       return (
                         <td key={dd.day}>
                           {components?.date ? (
@@ -481,26 +734,45 @@ const Menu = ({
                               year: selectedMonthYear?.year || 0,
                               isSelected,
                               isToday,
-                              onClick: () => onDayClicked(dd.month, dd.day),
+                              onClick: () =>
+                                !dayDisabled
+                                  ? onDayClicked(dd.month, dd.day)
+                                  : null,
+                              isDisabled: dayDisabled,
                             })
                           ) : (
                             <div
-                              className="zener-text-center zener-p-1 zener-group zener-cursor-pointer"
-                              onClick={() => onDayClicked(dd.month, dd.day)}
+                              className={cn(
+                                'zener-text-center zener-p-1 zener-group',
+                                {
+                                  'zener-cursor-pointer': !dayDisabled,
+                                  'zener-cursor-default': dayDisabled,
+                                },
+                              )}
+                              onClick={() =>
+                                !dayDisabled
+                                  ? onDayClicked(dd.month, dd.day)
+                                  : null
+                              }
                             >
                               <div
                                 className={cn(
                                   'zener-text-sm zener-flex zener-items-center zener-justify-center zener-h-[28px] zener-w-[28px] zener-rounded',
                                   {
                                     'zener-text-gray-300':
-                                      dd.month !== 'current',
-                                    'zener-text-black': dd.month === 'current',
+                                      dd.month !== 'current' || dayDisabled,
+                                    'zener-text-black':
+                                      dd.month === 'current' && !dayDisabled,
                                     'zener-border zener-border-solid zener-box-border zener-border-[#1D2275] ':
-                                      isToday,
+                                      isToday &&
+                                      dd.month === 'current' &&
+                                      !dayDisabled,
                                     'zener-bg-[#1D2275] zener-text-white zener-transition-none':
-                                      isSelected && dd.month === 'current',
+                                      isSelected &&
+                                      dd.month === 'current' &&
+                                      !dayDisabled,
                                     'group-hover:zener-bg-gray-100':
-                                      !isSelected,
+                                      !isSelected && !dayDisabled,
                                   },
                                 )}
                               >
@@ -519,7 +791,13 @@ const Menu = ({
         );
       }
     }
-  }, [lang, selectedMonthYear, currentYearRangeIndex, selectionMode]);
+  }, [
+    lang,
+    selectedMonthYear,
+    currentYearRangeIndex,
+    selectionMode,
+    converterMode,
+  ]);
 
   const getYearRange = useMemo(() => {
     const yearRange = `${getDecadeRange(currentYearRangeIndex).start}-${getDecadeRange(currentYearRangeIndex).end}`;
@@ -595,12 +873,19 @@ const Menu = ({
   };
 
   const getHeaderMonthText = () => {
-    return (lang === 'en' ? ENGLISH_NEPALI_MONTH : NEPALI_MONTH)[
-      selectedMonthYear?.month || 0
-    ];
+    if (type === 'BS') {
+      return (lang === 'en' ? ENGLISH_NEPALI_MONTH : NEPALI_MONTH)[
+        selectedMonthYear?.month || 0
+      ];
+    } else {
+      return (lang === 'en' ? AD_MONTH : AD_MONTH_NEPALI)[
+        selectedMonthYear?.month || 0
+      ];
+    }
   };
 
   const selectToday = () => {
+    // @ts-ignore
     onChange?.(today);
   };
 

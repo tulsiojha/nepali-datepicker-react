@@ -1,3 +1,4 @@
+import { IDatePickerType } from '../select/nepali-date-picker';
 import { baishakOne, startDateAD, startDateBS, yearMonthDays } from './data';
 
 type IDate = {
@@ -120,7 +121,7 @@ export const findBSfromAD = (date: string) => {
   let days = getDays(d, dateForBaishakOneInADForGivenYear);
 
   // for nepali year if days are negative it means we are in different quarter of english year, so we need to go to previous quarter
-  if (days < 0) {
+  if (days <= 0) {
     yearIndex -= 1;
 
     baishakOneInADForGivenYear = getDateFromNumber(baishakOne[yearIndex]);
@@ -132,6 +133,7 @@ export const findBSfromAD = (date: string) => {
   }
 
   const startBSDate = getDateFromNumber(startDateBS);
+
   if (
     yearIndex + startBSDate.year >
       startBSDate.year + yearMonthDays.length - 1 ||
@@ -144,6 +146,7 @@ export const findBSfromAD = (date: string) => {
 
   let totalMonths = 0;
   let totalDays = 0;
+
   for (let x = 0; x < days; x++) {
     totalDays += 1;
     if (totalDays > currentBSYearMonths[totalMonths]) {
@@ -191,11 +194,11 @@ export const getCurrentDate = ({ type = 'np' }: { type?: 'en' | 'np' }) => {
 };
 
 export const getMonthInfo = ({
-  type = 'np',
+  type = 'BS',
   year,
   month,
 }: {
-  type?: 'en' | 'np';
+  type?: IDatePickerType;
   year: number;
   month: number;
 }) => {
@@ -236,18 +239,21 @@ export const getMonthInfo = ({
   };
 
   switch (type) {
-    case 'en': {
-      const date = new Date(year, month + 1, 0);
+    case 'AD': {
+      const currentDate = new Date(year, month, 0);
+      const prevDate = new Date(year, month - 1, 0).getDate();
+      const nextDate = new Date(year, month + 1, 0).getDate();
+      const firstWeekDay = new Date(
+        stringDateFormatter({ year, month, date: 1 }),
+      ).getDay();
       return {
-        currentMonthDays: date.getDate(),
-        firstWeekDay: new Date(
-          stringDateFormatter({ year, month, date: 1 }),
-        ).getDay(),
-        prevMonthDays: 0,
-        nextMonthDays: 0,
+        currentMonthDays: currentDate.getDate(),
+        firstWeekDay,
+        prevMonthDays: prevDate,
+        nextMonthDays: nextDate,
       };
     }
-    case 'np':
+    case 'BS':
     default: {
       const yearIndex = getBSYearIndexFromBS(year);
       const engYear = findADfromBS(

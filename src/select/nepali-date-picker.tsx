@@ -2,19 +2,28 @@ import { ReactNode, useEffect, useRef, useState } from 'react';
 import Menu from './menu';
 import useBounds from '../utils/use-bounds';
 import { cn, engToNepNumberFullDate } from '../utils/commons';
-import { reg } from '../utils/calendar';
+import { reg, stringDateFormatter } from '../utils/calendar';
 import { NEPALI_DIGITS_TO_ENG } from '../utils/data';
 import { CloseIcon } from '../icons';
 import { NepaliDate } from '../utils/nepali-date-picker';
 
+export type IDatePickerType = 'BS' | 'AD';
+
 export type ILang = 'np' | 'en';
 
-export type IBaseType = {
-  onChange?: (date: NepaliDate) => void;
+export type DateTypeMap = {
+  BS: NepaliDate;
+  AD: Date;
+};
+
+export interface IBaseType<T extends keyof DateTypeMap | undefined = 'BS'> {
   lang?: ILang;
+  type?: T;
+  onChange?: (date: (T extends 'BS' ? NepaliDate : Date) | null) => void;
   portalClassName?: string;
   menuContainerClassName?: string;
   calendarClassName?: string;
+  converterMode?: boolean;
   components?: {
     footer?: (props: {
       onTodayClick: () => void;
@@ -43,23 +52,27 @@ export type IBaseType = {
       isToday: boolean;
       isSelected: boolean;
       dateText: string | number;
+      isDisabled: boolean;
     }) => ReactNode;
     year?: (props: {
       onClick: () => void;
       yearText: string | number;
       yearNumber: number;
+      isDisabled: boolean;
     }) => ReactNode;
     month?: (props: {
       onClick: () => void;
       monthText: string | number;
       monthNumber: number;
       year: number;
+      isDisabled: boolean;
     }) => ReactNode;
     week?: (props: { weekText: string; weekNumber: number }) => ReactNode;
   };
-};
+}
 
-interface INepaliDatePicker extends IBaseType {
+interface INepaliDatePicker<T extends keyof DateTypeMap | undefined = 'BS'>
+  extends IBaseType<T> {
   open?: boolean;
   disabled?: boolean;
   placeholder?: string;
@@ -70,7 +83,7 @@ interface INepaliDatePicker extends IBaseType {
     showclear: boolean;
   }) => ReactNode;
   showclear?: boolean;
-  value?: NepaliDate | string;
+  value?: NepaliDate | Date | string | null;
   className?:
     | string
     | (() => { focus?: string; disabled?: string; default?: string });
@@ -101,7 +114,8 @@ const convertToEnglish = (value: string) => {
   return x.join('');
 };
 
-const NepaliDatePicker = ({
+const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
+  type = 'BS',
   open,
   disabled,
   placeholder,
@@ -116,24 +130,37 @@ const NepaliDatePicker = ({
   prefix,
   suffix,
   showclear = true,
-}: INepaliDatePicker) => {
+  converterMode,
+}: INepaliDatePicker<T>) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const portalRef = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<NepaliDate>();
+  const [selectedDate, setSelectedDate] = useState<NepaliDate | Date | null>();
   const [inputValue, setInputValue] = useState<any>('');
-  const [today, setToday] = useState(new NepaliDate());
+  const [today, setToday] = useState(
+    type === 'BS' ? new NepaliDate() : new Date(),
+  );
 
   const { bounds } = useBounds({ inputRef: containerRef });
 
   useEffect(() => {
-    setToday(new NepaliDate());
+    setToday(type === 'BS' ? new NepaliDate() : new Date());
   }, []);
 
   useEffect(() => {
     if (selectedDate) {
-      setInputValue(selectedDate.toString());
+      if (type === 'BS') {
+        setInputValue(selectedDate.toString());
+      } else {
+        setInputValue(
+          stringDateFormatter({
+            year: selectedDate.getFullYear() as number,
+            month: (selectedDate.getMonth() as number) + 1,
+            date: selectedDate.getDate() as number,
+          }),
+        );
+      }
     } else {
       setInputValue('');
     }
@@ -149,8 +176,21 @@ const NepaliDatePicker = ({
 
   useEffect(() => {
     if (value) {
-      const d = new NepaliDate(value);
-      setSelectedDate(d);
+      switch (type) {
+        case 'AD':
+          if (typeof value === 'string' || value instanceof Date) {
+            setSelectedDate(new Date(value));
+          }
+          break;
+        case 'BS':
+        default:
+          if (typeof value === 'string' || value instanceof NepaliDate) {
+            setSelectedDate(new NepaliDate(value));
+          }
+          break;
+      }
+    } else {
+      setSelectedDate(null);
     }
   }, [value]);
 
@@ -181,6 +221,7 @@ const NepaliDatePicker = ({
 
   const clear = () => {
     setSelectedDate(undefined);
+    onChange?.(null);
   };
 
   return (
@@ -317,7 +358,7 @@ const NepaliDatePicker = ({
                   clear();
                 }}
                 tabIndex={-1}
-                className="zener-outline-none zener-border-0 zener-opacity-80 hover:zener-opacity-100 zener-transition-all zener-bg-transparent zener-flex zener-items-center zener-justify-center zener-text-inherit"
+                className="zener-cursor-pointer zener-outline-none zener-border-0 zener-opacity-80 hover:zener-opacity-100 zener-transition-all zener-bg-transparent zener-flex zener-items-center zener-justify-center zener-text-inherit"
               >
                 <CloseIcon size={16} />
               </button>
@@ -334,6 +375,7 @@ const NepaliDatePicker = ({
         selectedDate={selectedDate}
         onChange={(e) => {
           setSelectedDate(e);
+          // @ts-ignore
           onChange?.(e);
           closeMenu();
         }}
@@ -343,6 +385,8 @@ const NepaliDatePicker = ({
         portalClassName={portalClassName}
         calendarClassName={calendarClassName}
         components={components}
+        type={type}
+        converterMode={converterMode}
       />
     </div>
   );

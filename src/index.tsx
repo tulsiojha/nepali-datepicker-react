@@ -1,36 +1,70 @@
 import ReactDOM from 'react-dom/client';
 import NepaliDatePicker from './select';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from './utils/commons';
 import { NextIcon, PreviousIcon } from './icons';
-import { NepaliDate, toAD, toBS } from './utils/nepali-date-picker';
+import { NepaliDate } from './utils/nepali-date-picker';
+import { baishakOne } from './utils/data';
+import { getDateFromNumber, stringDateFormatter } from './utils/calendar';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
 const App = () => {
-  const [value, setValue] = useState('2053-10-19');
-  console.log(toBS('1943-4-14'));
+  const [value, setValue] = useState<NepaliDate | Date | null>(new Date());
+  useEffect(() => {
+    console.log(value);
+  }, [value]);
   return (
     <div>
-      <NepaliDatePicker
-        value={value}
-        onChange={(e) => {
-          console.log(e);
-          setValue(e.toString());
-        }}
-        placeholder="Select date"
-      />
-      {JSON.stringify(value)}
+      <button
+        onClick={() => {
+          function iterateDates(startDate: any, endDate: any) {
+            const currentDate = new Date(startDate);
+            const finalDate = new Date(endDate);
 
+            while (currentDate <= finalDate) {
+              const d = currentDate.toISOString().split('T')[0];
+              // console.log(); // Print date in YYYY-MM-DD format
+              const np = new NepaliDate(currentDate);
+              console.log(
+                'date.....',
+                d ===
+                  stringDateFormatter(
+                    getDateFromNumber(
+                      baishakOne[(np.getFullYear() as number) - 2000],
+                    ),
+                  )
+                  ? d
+                  : '',
+              );
+              // Increment date by 1 day
+              currentDate.setDate(currentDate.getDate() + 1);
+            }
+          }
+
+          const startDate = '1943-04-14';
+          const endDate = '2033-04-13';
+
+          iterateDates(startDate, endDate);
+        }}
+      >
+        itetrate
+      </button>
       <NepaliDatePicker
         value={value}
         onChange={(e) => {
-          console.log(e);
-          setValue(e.toString());
+          setValue(e);
         }}
+        type="BS"
+        lang="en"
         placeholder="Select date"
-        open
+        // converterMode
+      />
+      <NepaliDatePicker
+        // value={value ? new NepaliDate(value) : value}
+        onChange={(e) => {}}
+        placeholder="Select date"
         className={() => {
           const cc =
             'zener-p-1 zener-bg-[#020408] zener-rounded focus:zener-ring-1 focus:zener-ring-sky-400 focus-within:zener-ring-1 focus-within:zener-ring-sky-400 zener-w-fit zener-min-w-[122px] zener-min-h-[26px] zener-box-border';
@@ -40,19 +74,28 @@ const App = () => {
         }}
         menuContainerClassName="zener-bg-[#020408] zener-rounded zener-shadow-menu"
         components={{
-          date: ({ dateText, dateMonthType, isToday, isSelected, onClick }) => {
+          date: ({
+            dateText,
+            dateMonthType,
+            isToday,
+            isSelected,
+            onClick,
+            isDisabled,
+          }) => {
             return (
               <div
                 onClick={onClick}
                 className={cn(
-                  'zener-flex zener-items-center zener-justify-center zener-text-center zener-rounded zener-cursor-pointer zener-h-[28px] zener-w-[28px]',
+                  'zener-flex zener-items-center zener-justify-center zener-text-center zener-rounded zener-h-[28px] zener-w-[28px]',
                   {
                     'zener-text-white ': dateMonthType === 'current',
                     'zener-text-gray-500 ': dateMonthType !== 'current',
                     'zener-border zener-border-blue-400 zener-border-solid':
                       isToday,
-                    'hover:zener-bg-gray-700': !isSelected,
+                    'hover:zener-bg-gray-700': !isSelected && !isDisabled,
                     'zener-bg-blue-400': isSelected,
+                    'zener-cursor-pointer ': !isDisabled,
+                    'zener-cursor-default': isDisabled,
                   },
                 )}
               >

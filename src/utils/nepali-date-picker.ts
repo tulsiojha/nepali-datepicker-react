@@ -61,13 +61,12 @@ class NepaliDate {
         this.#date = yearOrValue.#date;
       } else {
         const adDate = yearOrValue;
-        const d = findBSfromAD(
-          stringDateFormatter({
-            year: adDate.getFullYear(),
-            month: adDate.getMonth() + 1,
-            date: adDate.getDate(),
-          }),
-        );
+        const stringDate = stringDateFormatter({
+          year: adDate.getFullYear(),
+          month: adDate.getMonth() + 1,
+          date: adDate.getDate(),
+        });
+        const d = findBSfromAD(stringDate);
         this.#year = d.year;
         this.#month = d.month;
         this.#date = d.date;
