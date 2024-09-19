@@ -1,9 +1,9 @@
 {
-  "name": "@zener/react-nepali-datepicker",
+  "name": "@zener/nepali-datepicker-react",
   "author": "Bikash Ojha",
   "license": "MIT",
-  "version": "3.0.0",
-  "description": "The React Select is a minimal select component for reactjs.",
+  "version": "1.0.0",
+  "description": "Nepali Datepicker React is a lightweight, highly customizable, and feature-rich datepicker component, specifically designed for handling Nepali dates in React.js applications. It offers seamless integration, intuitive user experience, and extensive configuration options.",
   "private": false,
   "types": "./dist/@types/index.d.ts",
   "main": "./dist/index.js",
@@ -16,28 +16,31 @@
     },
     ".": {
       "import": {
-        "types": "./dist/@types/index.d.ts",
+        "types": "./dist/@types/datepicker/index.d.ts",
         "default": "./dist/index.mjs"
       },
       "require": {
-        "types": "./dist/@types/index.d.ts",
+        "types": "./dist/@types/datepicker/index.d.ts",
         "default": "./dist/index.js"
       }
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/opensource-hq/react-select.git"
+    "url": "git+https://github.com/tulsiojha/nepali-datepicker-react.git"
   },
   "keywords": [
     "react",
-    "select",
+    "input",
     "control",
     "form",
-    "options",
-    "combo-box",
     "ui",
-    "multi-select"
+    "date-picker",
+    "date-api",
+    "customize",
+    "nepali",
+    "AD",
+    "BS"
   ],
   "files": ["dist", "README.md", "LICENSE"],
   "publishConfig": {
@@ -95,8 +98,8 @@
     ]
   },
   "bugs": {
-    "url": "https://github.com/opensource-hq/react-select/issues"
+    "url": "https://github.com/tulsiojha/nepali-datepicker-react/issues"
   },
-  "homepage": "https://react-select.ojhabikash.com.np/",
+  "homepage": "https://nepali-datepicker-react.ojhabikash.com.np/",
   "dependencies": {}
 }

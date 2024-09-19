@@ -4,7 +4,7 @@ const { build } = require('esbuild');
 const { sassPlugin } = require('esbuild-sass-plugin');
 const { peerDependencies } = require('./package.json');
 
-const entryFile = 'src/select/index.tsx';
+const entryFile = './src/datepicker/index.ts';
 const shared = {
   bundle: true,
   entryPoints: [entryFile],

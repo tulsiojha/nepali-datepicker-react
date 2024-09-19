@@ -1,5 +1,5 @@
 {
-  "include": ["./src/select/index.tsx"],
+  "include": ["./src/datepicker/index.ts"],
   "compilerOptions": {
     "skipLibCheck": true,
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
@@ -15,9 +15,7 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
-    "declaration": true,
+    "declaration": true
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

@@ -30,7 +30,7 @@ import {
 } from '../utils/data';
 import { NextIcon, PreviousIcon } from '../icons';
 import { DateTypeMap, IBaseType } from './nepali-date-picker';
-import { NepaliDate } from '../utils/nepali-date-picker';
+import { NepaliDate } from '../utils/nepali-date';
 
 type ISelectionMode = 'day' | 'month' | 'year';
 
@@ -72,6 +72,7 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
   portalClassName,
   components,
   converterMode,
+  animation,
 }: IMenu<T>) => {
   const [selectionMode, setSelectionMode] = useState<ISelectionMode>('day');
   const [currentYearRangeIndex, setCurrentYearRangeIndex] = useState(0);
@@ -716,7 +717,7 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                 const ii = i;
                 return (
                   <tr key={ii}>
-                    {d.map((dd) => {
+                    {d.map((dd, index) => {
                       const isSelected = isSelectedDate(dd.day, dd.month);
                       const isToday = isTodayDate(dd.day);
                       const dateText =
@@ -739,6 +740,7 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                                   ? onDayClicked(dd.month, dd.day)
                                   : null,
                               isDisabled: dayDisabled,
+                              weekDay: index,
                             })
                           ) : (
                             <div
@@ -907,12 +909,15 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
           ref={portalRef}
         >
           <motion.div
-            {...{
-              initial: { opacity: 0, translateY: -5 },
-              animate: { opacity: 1, translateY: 0 },
-              exit: { opacity: 0, translateY: -5 },
-              transition: { duration: 0.2 },
-            }}
+            {...(animation ||
+              (animation === null
+                ? {}
+                : {
+                    initial: { opacity: 0, translateY: -5 },
+                    animate: { opacity: 1, translateY: 0 },
+                    exit: { opacity: 0, translateY: -5 },
+                    transition: { duration: 0.2 },
+                  }))}
             className={cn(
               'zener-overflow-hidden zener-h-full',
               menuContainerClassName ||

@@ -1,4 +1,4 @@
-import { ILang } from '../select/nepali-date-picker';
+import { ILang } from '../datepicker/nepali-date-picker';
 import {
   findADfromBS,
   findBSfromAD,
@@ -9,8 +9,10 @@ import { engToNepNumberFullDate, engToNepaliNumber } from './commons';
 import {
   ENGLISH_NEPALI_MONTH,
   ENGLISH_WEEK,
+  ENGLISH_WEEK_FULL,
   NEPALI_MONTH,
   NEPALI_WEEK,
+  NEPALI_WEEK_FULL,
 } from './data';
 
 const reg = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[012])$/;
@@ -156,6 +158,10 @@ class NepaliDate {
     }
   }
 
+  toADasDate() {
+    return new Date(this.toAD('en').toString());
+  }
+
   getFullYear(lang: ILang = 'en') {
     return lang === 'en' ? this.#year : engToNepaliNumber(this.#year);
   }
@@ -165,10 +171,10 @@ class NepaliDate {
   }
 
   getMonthName(lang: ILang = 'en') {
-    return this.getMonthByIndex(this.#month, lang);
+    return this.#getMonthByIndex(this.#month, lang);
   }
 
-  getMonthByIndex(index: number, lang: ILang = 'en') {
+  #getMonthByIndex(index: number, lang: ILang = 'en') {
     if (index < 0 || index > 11) {
       throw new Error('Invalid month');
     }
@@ -184,12 +190,19 @@ class NepaliDate {
   }
 
   getDayName(lang: ILang = 'en') {
-    return this.getDayByIndex(this.#day, lang);
+    return this.#getDayByIndex(this.#day, lang, false);
   }
 
-  getDayByIndex(index: number, lang: ILang = 'en') {
+  getDayNameFull(lang: ILang = 'en') {
+    return this.#getDayByIndex(this.#day, lang, true);
+  }
+
+  #getDayByIndex(index: number, lang: ILang = 'en', full = false) {
     if (index < 0 || index > 6) {
       throw new Error('Invalid day');
+    }
+    if (full) {
+      return lang === 'en' ? ENGLISH_WEEK_FULL[index] : NEPALI_WEEK_FULL[index];
     }
     return lang === 'en' ? ENGLISH_WEEK[index] : NEPALI_WEEK[index];
   }

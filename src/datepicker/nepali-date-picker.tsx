@@ -1,11 +1,18 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
+import { AnimationProps } from 'framer-motion';
 import Menu from './menu';
 import useBounds from '../utils/use-bounds';
 import { cn, engToNepNumberFullDate } from '../utils/commons';
 import { reg, stringDateFormatter } from '../utils/calendar';
 import { NEPALI_DIGITS_TO_ENG } from '../utils/data';
 import { CloseIcon } from '../icons';
-import { NepaliDate } from '../utils/nepali-date-picker';
+import { NepaliDate } from '../utils/nepali-date';
+
+export type ISuffixRender = (props: {
+  onClear: () => void;
+  isOpen: boolean;
+  showclear: boolean;
+}) => ReactNode;
 
 export type IDatePickerType = 'BS' | 'AD';
 
@@ -16,6 +23,53 @@ export type DateTypeMap = {
   AD: Date;
 };
 
+export type IComponents = {
+  footer?: (props: {
+    onTodayClick: () => void;
+    todayText: string;
+  }) => ReactNode;
+  header?: (props: {
+    prevClick: () => void;
+    nextClick: () => void;
+    onMonthSelectClicked: () => void;
+    onYearSelectClicked: () => void;
+    prevDisabled: boolean;
+    nextDisabled: boolean;
+    selectionMode: 'day' | 'year' | 'month';
+    monthText: string;
+    monthNumber: number;
+    yearNumber: number;
+    yearText: string;
+    yearRange: { start: number; end: number };
+    yearRangeText: string;
+  }) => ReactNode;
+  date?: (props: {
+    onClick: () => void;
+    dateMonthType: 'current' | 'prev' | 'next';
+    month: number;
+    year: number;
+    isToday: boolean;
+    isSelected: boolean;
+    dateText: string | number;
+    isDisabled: boolean;
+    weekDay: number;
+  }) => ReactNode;
+  year?: (props: {
+    onClick: () => void;
+    yearText: string | number;
+    yearNumber: number;
+    isDisabled: boolean;
+  }) => ReactNode;
+  month?: (props: {
+    onClick: () => void;
+    monthText: string | number;
+    monthNumber: number;
+    year: number;
+    isDisabled: boolean;
+  }) => ReactNode;
+  week?: (props: { weekText: string; weekNumber: number }) => ReactNode;
+};
+
 export interface IBaseType<T extends keyof DateTypeMap | undefined = 'BS'> {
   lang?: ILang;
   type?: T;
@@ -24,64 +78,18 @@ export interface IBaseType<T extends keyof DateTypeMap | undefined = 'BS'> {
   menuContainerClassName?: string;
   calendarClassName?: string;
   converterMode?: boolean;
-  components?: {
-    footer?: (props: {
-      onTodayClick: () => void;
-      todayText: string;
-    }) => ReactNode;
-    header?: (props: {
-      prevClick: () => void;
-      nextClick: () => void;
-      onMonthSelectClicked: () => void;
-      onYearSelectClicked: () => void;
-      prevDisabled: boolean;
-      nextDisabled: boolean;
-      selectionMode: 'day' | 'year' | 'month';
-      monthText: string;
-      monthNumber: number;
-      yearNumber: number;
-      yearText: string;
-      yearRange: { start: number; end: number };
-      yearRangeText: string;
-    }) => ReactNode;
-    date?: (props: {
-      onClick: () => void;
-      dateMonthType: 'current' | 'prev' | 'next';
-      month: number;
-      year: number;
-      isToday: boolean;
-      isSelected: boolean;
-      dateText: string | number;
-      isDisabled: boolean;
-    }) => ReactNode;
-    year?: (props: {
-      onClick: () => void;
-      yearText: string | number;
-      yearNumber: number;
-      isDisabled: boolean;
-    }) => ReactNode;
-    month?: (props: {
-      onClick: () => void;
-      monthText: string | number;
-      monthNumber: number;
-      year: number;
-      isDisabled: boolean;
-    }) => ReactNode;
-    week?: (props: { weekText: string; weekNumber: number }) => ReactNode;
-  };
+  components?: IComponents;
+  animation?: null | AnimationProps;
 }
 
-interface INepaliDatePicker<T extends keyof DateTypeMap | undefined = 'BS'>
-  extends IBaseType<T> {
+export interface INepaliDatePicker<
+  T extends keyof DateTypeMap | undefined = 'BS',
+> extends IBaseType<T> {
   open?: boolean;
   disabled?: boolean;
   placeholder?: string;
   prefix?: ReactNode;
-  suffix?: (props: {
-    onClear: () => void;
-    isOpen: boolean;
-    showclear: boolean;
-  }) => ReactNode;
+  suffix?: ISuffixRender;
   showclear?: boolean;
   value?: NepaliDate | Date | string | null;
   className?:
@@ -131,6 +139,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
   suffix,
   showclear = true,
   converterMode,
+  animation,
 }: INepaliDatePicker<T>) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -166,8 +175,16 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
     }
   }, [selectedDate]);
 
+  useEffect(() => {
+    if (!selectedDate) {
+      setToday(type === 'BS' ? new NepaliDate() : new Date());
+    }
+  }, [type]);
+
   const closeMenu = () => {
-    setShow(false);
+    if (!open) {
+      setShow(false);
+    }
   };
 
   useEffect(() => {
@@ -225,7 +242,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
   };
 
   return (
-    <div>
+    <div className="zener-w-full">
       <div
         ref={containerRef}
         className={cn(
@@ -237,7 +254,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
           className && typeof className === 'function'
             ? `${disabled ? className().disabled : className().default}`
             : className ||
-                `${!disabled ? 'focus:zener-ring-1 focus:zener-ring-blue-400 focus-within:zener-ring-1 focus-within:zener-ring-blue-400' : ''} zener-font-sans zener-bg-white zener-text-sm zener-px-2 zener-py-0.5 zener-border-solid zener-border zener-border-stone-200 zener-rounded zener-min-w-[122px] zener-outline-none zener-w-fit zener-min-h-[24px]`,
+                `${!disabled ? 'focus:zener-ring-1 focus:zener-ring-blue-400 focus-within:zener-ring-1 focus-within:zener-ring-blue-400' : ''} zener-font-sans zener-bg-white zener-text-sm zener-px-2 zener-py-0.5 zener-border-solid zener-border zener-border-stone-200 zener-rounded zener-min-w-[122px] zener-outline-none zener-w-full`,
         )}
         onFocus={() => {
           if (disabled) {
@@ -251,7 +268,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
       >
         {prefix && <div>{prefix}</div>}
         <input
-          className="zener-outline-none zener-border-0 zener-w-fit zener-bg-transparent zener-flex-1 zener-text-inherit"
+          className="zener-outline-none zener-border-0 zener-w-fit zener-bg-transparent zener-flex-1 zener-text-inherit zener-min-h-[24px]"
           size={10}
           tabIndex={0}
           ref={inputRef}
@@ -259,7 +276,9 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
           disabled={disabled}
           onClick={() => {
             if (!disabled) {
-              setShow((prev) => !prev);
+              if (!open) {
+                setShow((prev) => !prev);
+              }
             }
           }}
           onBlur={(e) => {
@@ -343,7 +362,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
 
         {suffix?.({
           onClear: clear,
-          isOpen: show,
+          isOpen: show || !!open,
           showclear,
         }) || (
           <div
@@ -378,6 +397,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
           // @ts-ignore
           onChange?.(e);
           closeMenu();
+          inputRef.current?.focus();
         }}
         onNextMonth={() => {}}
         onPrevMonth={() => {}}
@@ -387,6 +407,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
         components={components}
         type={type}
         converterMode={converterMode}
+        animation={animation}
       />
     </div>
   );

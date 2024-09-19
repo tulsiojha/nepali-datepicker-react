@@ -1,16 +1,17 @@
 import ReactDOM from 'react-dom/client';
-import NepaliDatePicker from './select';
 import { useEffect, useState } from 'react';
 import { cn } from './utils/commons';
 import { NextIcon, PreviousIcon } from './icons';
-import { NepaliDate } from './utils/nepali-date-picker';
 import { baishakOne } from './utils/data';
 import { getDateFromNumber, stringDateFormatter } from './utils/calendar';
+import NepaliDatePicker, { NepaliDate } from './datepicker';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
 const App = () => {
+  const date = new NepaliDate();
+  console.log('date' + date.getFullYear());
   const [value, setValue] = useState<NepaliDate | Date | null>(new Date());
   useEffect(() => {
     console.log(value);
@@ -59,6 +60,7 @@ const App = () => {
         type="BS"
         lang="en"
         placeholder="Select date"
+        open
         // converterMode
       />
       <NepaliDatePicker
@@ -211,7 +213,7 @@ root.render(
   <div style={{ width: '200vw', height: '200vh' }}>
     <div
       style={{
-        width: '50vw',
+        width: '200px',
         marginLeft: '300px',
         marginTop: '300px',
         display: 'flex',
@@ -219,7 +221,13 @@ root.render(
         gap: '20px',
       }}
     >
-      <App />
+      <NepaliDatePicker
+        type="BS"
+        lang="en"
+        placeholder="Select date"
+        open
+        // converterMode
+      />
     </div>
   </div>,
 );

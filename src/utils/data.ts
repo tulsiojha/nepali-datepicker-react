@@ -52,7 +52,7 @@ export const yearMonthDays = [
   [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 30],
   [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
   [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 30],
-  [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31], //2050
+  [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31], // 2050
   [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 30],
   [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
   [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 30],
@@ -111,6 +111,15 @@ export const baishakOne = [
 ];
 
 export const ENGLISH_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+export const ENGLISH_WEEK_FULL = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
 
 export const NEPALI_DIGITS = {
   '0': '०',
@@ -146,6 +155,16 @@ export const NEPALI_WEEK = [
   'बिहि',
   'शुक्र',
   'शनि',
+];
+
+export const NEPALI_WEEK_FULL = [
+  'आइतबार',
+  'सोमबार',
+  'मंगलबार',
+  'बुधबार',
+  'बिहीबार',
+  'शुक्रबार',
+  'शनिबार',
 ];
 
 export const ENGLISH_NEPALI_MONTH = [

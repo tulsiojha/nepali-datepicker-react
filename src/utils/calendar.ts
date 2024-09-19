@@ -1,4 +1,4 @@
-import { IDatePickerType } from '../select/nepali-date-picker';
+import { IDatePickerType } from '../datepicker/nepali-date-picker';
 import { baishakOne, startDateAD, startDateBS, yearMonthDays } from './data';
 
 type IDate = {
