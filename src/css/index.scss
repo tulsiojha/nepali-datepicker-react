@@ -494,6 +494,18 @@
   --tw-contain-style:  ;
 }
 
+/* For iOS and Safari */
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* For Android and other browsers */
+
+* {
+  tap-highlight-color: transparent;
+}
+
 .zener-date-picker,
 .zener-date-picker * {
   scroll-behavior: unset !important;

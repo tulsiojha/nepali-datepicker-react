@@ -13,6 +13,7 @@ const App = () => {
   const date = new NepaliDate();
   console.log('date' + date.getFullYear());
   const [value, setValue] = useState<NepaliDate | Date | null>(new Date());
+  const [expanded, setExpanded] = useState(false);
   useEffect(() => {
     console.log(value);
   }, [value]);
@@ -52,6 +53,18 @@ const App = () => {
       >
         itetrate
       </button>
+      <button onClick={() => setExpanded((prev) => !prev)}>expand</button>
+      {expanded && (
+        <div>
+          The skeleton of every application is routing. This page will introduce
+          you to the fundamental concepts of routing for the web and how to
+          handle routing in Next.js. The skeleton of every application is
+          routing. This page will introduce you to the fundamental concepts of
+          routing for the web and how to handle routing in Next.js. The skeleton
+          of every application is routing. This page will introduce you to the
+          fundamental concepts of routing for the web and how to handle routing
+        </div>
+      )}
       <NepaliDatePicker
         value={value}
         onChange={(e) => {
@@ -60,7 +73,6 @@ const App = () => {
         type="BS"
         lang="en"
         placeholder="Select date"
-        open
         // converterMode
       />
       <NepaliDatePicker
@@ -221,13 +233,7 @@ root.render(
         gap: '20px',
       }}
     >
-      <NepaliDatePicker
-        type="BS"
-        lang="en"
-        placeholder="Select date"
-        open
-        // converterMode
-      />
+      <App />
     </div>
   </div>,
 );

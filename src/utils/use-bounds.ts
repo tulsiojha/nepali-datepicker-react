@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useState } from "react";
+import { RefObject, useLayoutEffect, useState } from 'react';
 
 export type IBounds = {
   left: number;
@@ -17,7 +17,7 @@ const getPosition = (target: HTMLDivElement) => {
   };
 };
 
-const useBounds = ({ inputRef }: { inputRef: RefObject<HTMLDivElement> }) => {
+const useBounds = (inputRef: RefObject<HTMLDivElement>, deps: any[]) => {
   const [bounds, setBounds] = useState<IBounds>({
     left: 0,
     top: 0,
@@ -26,19 +26,34 @@ const useBounds = ({ inputRef }: { inputRef: RefObject<HTMLDivElement> }) => {
   });
 
   // handle resizing of menu bounds
-  useEffect(() => {
+  useLayoutEffect(() => {
     setBounds(getPosition(inputRef.current as HTMLDivElement));
     const resizeListener = () => {
       if (inputRef && inputRef.current) {
         setBounds(getPosition(inputRef.current));
       }
     };
-    window.addEventListener("resize", resizeListener);
+    window.addEventListener('resize', resizeListener);
 
     return () => {
-      window.removeEventListener("resize", resizeListener);
+      window.removeEventListener('resize', resizeListener);
     };
   }, [inputRef.current]);
+
+  useLayoutEffect(() => {
+    if (inputRef && inputRef.current) {
+      setBounds(getPosition(inputRef.current));
+    }
+    let int = 0;
+    if (deps.some((e) => !!e)) {
+      int = setInterval(() => {
+        setBounds(getPosition(inputRef.current as HTMLDivElement));
+      }, 50);
+    }
+    return () => {
+      clearInterval(int);
+    };
+  }, [inputRef.current, ...deps]);
 
   return { bounds, getPosition, setBounds };
 };

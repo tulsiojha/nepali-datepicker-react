@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AnimationProps } from 'framer-motion';
 import Menu from './menu';
 import useBounds from '../utils/use-bounds';
@@ -151,11 +151,15 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
     type === 'BS' ? new NepaliDate() : new Date(),
   );
 
-  const { bounds } = useBounds({ inputRef: containerRef });
+  const { bounds } = useBounds(containerRef, [show, open]);
 
   useEffect(() => {
     setToday(type === 'BS' ? new NepaliDate() : new Date());
   }, []);
+
+  useEffect(() => {
+    setToday(type === 'BS' ? new NepaliDate() : new Date());
+  }, [type]);
 
   useEffect(() => {
     if (selectedDate) {
@@ -175,19 +179,13 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
     }
   }, [selectedDate]);
 
-  useEffect(() => {
-    if (!selectedDate) {
-      setToday(type === 'BS' ? new NepaliDate() : new Date());
-    }
-  }, [type]);
-
   const closeMenu = () => {
     if (!open) {
       setShow(false);
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setShow(!!open);
   }, [open]);
 
@@ -275,6 +273,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
           type="text"
           disabled={disabled}
           onClick={() => {
+            inputRef.current?.removeAttribute('readonly');
             if (!disabled) {
               if (!open) {
                 setShow((prev) => !prev);
@@ -293,6 +292,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
             }
             removeFocus();
             closeMenu();
+            inputRef.current?.removeAttribute('readonly');
           }}
           onFocus={() => {
             if (disabled) {
@@ -393,11 +393,11 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
         today={today}
         selectedDate={selectedDate}
         onChange={(e) => {
+          inputRef.current?.setAttribute('readonly', 'true');
           setSelectedDate(e);
           // @ts-ignore
           onChange?.(e);
           closeMenu();
-          inputRef.current?.focus();
         }}
         onNextMonth={() => {}}
         onPrevMonth={() => {}}
