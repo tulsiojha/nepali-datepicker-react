@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom/client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { cn } from './utils/commons';
 import { NextIcon, PreviousIcon } from './icons';
 import { baishakOne } from './utils/data';
@@ -10,13 +10,8 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
 const App = () => {
-  const date = new NepaliDate();
-  console.log('date' + date.getFullYear());
   const [value, setValue] = useState<NepaliDate | Date | null>(new Date());
   const [expanded, setExpanded] = useState(false);
-  useEffect(() => {
-    console.log(value);
-  }, [value]);
   return (
     <div>
       <button
@@ -72,6 +67,7 @@ const App = () => {
         }}
         type="BS"
         lang="en"
+        open
         placeholder="Select date"
         // converterMode
       />

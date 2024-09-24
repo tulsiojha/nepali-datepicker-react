@@ -85,11 +85,11 @@ class NepaliDate {
   }
 
   #setADDate = () => {
-    return new Date(
+    this.#adDate = new Date(
       findADfromBS(
         stringDateFormatter({
           year: this.#year,
-          month: this.#month,
+          month: this.#month + 1,
           date: this.#date,
         }),
       ).toString(),
