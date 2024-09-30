@@ -4,7 +4,7 @@ Nepali Datepicker React is a lightweight, highly customizable, and feature-rich 
 
 <a href="https://nepali-datepicker-react.ojhabikash.com.np/">Demo</a>
 
-<div style="display:flex; flex-direction:row; flex-wrap:wrap;"><img src="/images/nepali-datepicker-react.png" alt="Minimal Example" style="max-width:250px"/> <img src="/images/nepali-datepicker-react-custom.png" alt="Minimal Example" style="max-width:250px"/></div>
+<img src="/images/nepali-datepicker-react.png" alt="Minimal Example"/>
 
 ## Table of Content
 - [Nepali datepicker react](#nepali-datepicker-react)
