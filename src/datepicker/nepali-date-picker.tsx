@@ -51,6 +51,7 @@ export type IComponents = {
     isToday: boolean;
     isSelected: boolean;
     dateText: string | number;
+    date: number;
     isDisabled: boolean;
     weekDay: number;
   }) => ReactNode;
@@ -252,7 +253,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
           className && typeof className === 'function'
             ? `${disabled ? className().disabled : className().default}`
             : className ||
-                `${!disabled ? 'focus:zener-ring-1 focus:zener-ring-blue-400 focus-within:zener-ring-1 focus-within:zener-ring-blue-400' : ''} zener-font-sans zener-bg-white zener-text-sm zener-px-2 zener-py-0.5 zener-border-solid zener-border zener-border-stone-200 zener-rounded zener-min-w-[122px] zener-outline-none zener-w-full`,
+                `${!disabled ? 'focus:zener-ring-1 focus:zener-ring-blue-400 focus-within:zener-ring-1 focus-within:zener-ring-blue-400' : ''} zener-font-sans zener-bg-white zener-text-sm zener-px-2 zener-py-0.5 zener-border-solid zener-border zener-border-stone-200 zener-rounded zener-min-w-[122px] zener-outline-none zener-w-full zener-text-black`,
         )}
         onFocus={() => {
           if (disabled) {

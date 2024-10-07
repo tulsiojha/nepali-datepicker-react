@@ -718,12 +718,13 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                 return (
                   <tr key={ii}>
                     {d.map((dd, index) => {
-                      const isSelected = isSelectedDate(dd.day, dd.month);
-                      const isToday = isTodayDate(dd.day);
+                      const date = dd.day < 1 ? 0 : dd.day;
+                      const isSelected = isSelectedDate(date, dd.month);
+                      const isToday = isTodayDate(date);
                       const dateText =
-                        lang === 'en' ? dd.day : engToNepaliNumber(dd.day);
+                        lang === 'en' ? date : engToNepaliNumber(date);
 
-                      const dayDisabled = isDayDisabled(dd.day, dd.month);
+                      const dayDisabled = isDayDisabled(date, dd.month);
 
                       return (
                         <td key={dd.day}>
@@ -731,13 +732,14 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                             components.date({
                               dateMonthType: dd.month,
                               dateText,
+                              date,
                               month: selectedMonthYear?.month || 0,
                               year: selectedMonthYear?.year || 0,
                               isSelected,
                               isToday,
                               onClick: () =>
                                 !dayDisabled
-                                  ? onDayClicked(dd.month, dd.day)
+                                  ? onDayClicked(dd.month, date)
                                   : null,
                               isDisabled: dayDisabled,
                               weekDay: index,
@@ -753,7 +755,7 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                               )}
                               onClick={() =>
                                 !dayDisabled
-                                  ? onDayClicked(dd.month, dd.day)
+                                  ? onDayClicked(dd.month, date)
                                   : null
                               }
                             >
@@ -901,9 +903,10 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
             portalClassName || 'zener-font-sans zener-mt-1',
           )}
           style={{
-            left: bounds.left,
-            top: bounds.top + bounds.height,
+            left: 0,
+            top: 0,
             minWidth: 280,
+            transform: `translate(${bounds.left}px,${bounds.height + bounds.top}px)`,
             // maxWidth: 280,
           }}
           ref={portalRef}
@@ -971,7 +974,7 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                   </div>
                 )}
                 {selectionMode === 'year' && (
-                  <div className="zener-cursor-default zener-font-semibold zener-flex zener-flex-row zener-items-center">
+                  <div className="zener-cursor-default zener-font-semibold zener-flex zener-flex-row zener-items-center zener-text-black">
                     {getYearRange}
                   </div>
                 )}

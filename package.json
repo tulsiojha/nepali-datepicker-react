@@ -2,10 +2,10 @@
   "name": "@zener/nepali-datepicker-react",
   "author": "Bikash Ojha",
   "license": "MIT",
-  "version": "1.0.5",
+  "version": "1.1.1",
   "description": "Nepali Datepicker React is a lightweight, highly customizable, and feature-rich datepicker component, specifically designed for handling Nepali dates in React.js applications. It offers seamless integration, intuitive user experience, and extensive configuration options.",
   "private": false,
-  "types": "./dist/@types/index.d.ts",
+  "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "sideEffects": false,
@@ -16,11 +16,11 @@
     },
     ".": {
       "import": {
-        "types": "./dist/@types/datepicker/index.d.ts",
+        "types": "./dist/index.d.mts",
         "default": "./dist/index.mjs"
       },
       "require": {
-        "types": "./dist/@types/datepicker/index.d.ts",
+        "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
     }
@@ -48,7 +48,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "npm run clean && npm run build:css && node build.js && npm run tsc",
+    "build": "npm run clean && npm run build:css && node build.mjs && npm run tsc",
     "pack": "npm run build && npm pack --pack-destination ./out",
     "clean": "rimraf dist",
     "dev:build": "npm run build",
@@ -56,16 +56,18 @@
     "build:css": "tailwindcss -i ./src/scss/build.scss -o ./src/css/index.scss",
     "release": "pnpm build && npm publish"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@radix-ui/react-portal": "^1.1.1",
     "classnames": "^2.3.2",
-    "framer-motion": "^10.16.4",
+    "framer-motion": "^10.16.4"
+  },
+  "peerDependencies": {
+    "@types/react": "^18.2.22",
+    "@types/react-dom": "^18.2.14",
     "react": "^18.2.0 || ^17.0.0 || ^16.0.0"
   },
   "devDependencies": {
     "@radix-ui/react-dialog": "^1.1.1",
-    "@types/react": "^18.2.22",
-    "@types/react-dom": "^18.2.14",
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
     "esbuild": "^0.19.2",
@@ -82,11 +84,13 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
+    "glob": "^11.0.0",
     "prettier": "^2.8.8",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
     "rimraf": "^5.0.1",
     "tailwindcss": "^3.4.10",
+    "tsup": "^8.3.0",
     "typescript": "^5.2.2"
   },
   "browserslist": {
@@ -100,6 +104,5 @@
   "bugs": {
     "url": "https://github.com/tulsiojha/nepali-datepicker-react/issues"
   },
-  "homepage": "https://nepali-datepicker-react.ojhabikash.com.np/",
-  "dependencies": {}
+  "homepage": "https://nepali-datepicker-react.ojhabikash.com.np/"
 }

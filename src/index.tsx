@@ -67,7 +67,6 @@ const App = () => {
         }}
         type="BS"
         lang="en"
-        open
         placeholder="Select date"
         // converterMode
       />
@@ -218,17 +217,8 @@ const App = () => {
 };
 
 root.render(
-  <div style={{ width: '200vw', height: '200vh' }}>
-    <div
-      style={{
-        width: '200px',
-        marginLeft: '300px',
-        marginTop: '300px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '20px',
-      }}
-    >
+  <div>
+    <div>
       <App />
     </div>
   </div>,
