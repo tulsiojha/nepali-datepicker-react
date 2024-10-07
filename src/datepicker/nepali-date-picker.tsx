@@ -3,8 +3,13 @@ import { AnimationProps } from 'framer-motion';
 import Menu from './menu';
 import useBounds from '../utils/use-bounds';
 import { cn, engToNepNumberFullDate } from '../utils/commons';
-import { getDateFromNumber, reg, stringDateFormatter } from '../utils/calendar';
-import { NEPALI_DIGITS_TO_ENG, startDateBS } from '../utils/data';
+import {
+  getDateFromNumber,
+  getEndYearAD,
+  reg,
+  stringDateFormatter,
+} from '../utils/calendar';
+import { NEPALI_DIGITS_TO_ENG, startDateAD, startDateBS } from '../utils/data';
 import { CloseIcon } from '../icons';
 import { NepaliDate } from '../utils/nepali-date';
 
@@ -93,6 +98,7 @@ export interface INepaliDatePicker<
   suffix?: ISuffixRender;
   showclear?: boolean;
   value?: NepaliDate | Date | string | null;
+  inputReadOnly?: boolean;
   className?:
     | string
     | (() => { focus?: string; disabled?: string; default?: string });
@@ -141,6 +147,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
   showclear = true,
   converterMode,
   animation,
+  inputReadOnly,
 }: INepaliDatePicker<T>) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -279,8 +286,11 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
           ref={inputRef}
           type="text"
           disabled={disabled}
+          readOnly={inputReadOnly}
           onClick={() => {
-            inputRef.current?.removeAttribute('readonly');
+            if (!inputReadOnly) {
+              inputRef.current?.removeAttribute('readonly');
+            }
             if (!disabled) {
               if (!open) {
                 setShow((prev) => !prev);
@@ -299,7 +309,9 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
             }
             removeFocus();
             closeMenu();
-            inputRef.current?.removeAttribute('readonly');
+            if (!inputReadOnly) {
+              inputRef.current?.removeAttribute('readonly');
+            }
           }}
           onFocus={() => {
             if (disabled) {
@@ -317,21 +329,35 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
             const parsed = NepaliDate.parseDate(v);
             if (parsed) {
               if (type === 'AD') {
-                const oneAD = new Date('0001-01-01');
+                const oneAD = converterMode
+                  ? new Date(getDateFromNumber(startDateAD).toString())
+                  : new Date('0001-01-01');
                 let adDate = new Date(v);
                 if (adDate.getTime() < oneAD.getTime()) {
-                  adDate = new Date('0001-01-01');
+                  adDate = new Date(oneAD);
+                }
+                if (
+                  adDate.getTime() >
+                  new Date(getEndYearAD().toString()).getTime()
+                ) {
+                  adDate = new Date(getEndYearAD().toString());
                 }
                 setSelectedDate(adDate);
+                // @ts-ignore
+                onChange?.(adDate);
               } else {
                 try {
                   const d = new NepaliDate(v);
                   setSelectedDate(d);
+                  // @ts-ignore
+                  onChange?.(d);
                 } catch {
                   const d = new NepaliDate(
                     stringDateFormatter(getDateFromNumber(startDateBS)),
                   );
                   setSelectedDate(d);
+                  // @ts-ignore
+                  onChange?.(d);
                 }
               }
             }
@@ -417,7 +443,9 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
         today={today}
         selectedDate={selectedDate}
         onChange={(e) => {
-          inputRef.current?.setAttribute('readonly', 'true');
+          if (!inputReadOnly) {
+            inputRef.current?.setAttribute('readonly', 'true');
+          }
           setSelectedDate(e);
           // @ts-ignore
           onChange?.(e);

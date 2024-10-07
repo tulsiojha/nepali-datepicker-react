@@ -3,15 +3,15 @@ import { RefObject, useEffect, useMemo, useState } from 'react';
 import { Portal } from '@radix-ui/react-portal';
 import { IBounds } from '../utils/use-bounds';
 import {
-  findADfromBS,
   getDateFromNumber,
   getDecadeRange,
+  getEndYearAD,
   getMonthInfo,
+  getStartYearAD,
   getYearsArray,
   groupDates,
   padFourNumber,
   padTwo,
-  stringDateFormatter,
 } from '../utils/calendar';
 import {
   cn,
@@ -48,17 +48,6 @@ interface IMenu<T extends keyof DateTypeMap | undefined = 'BS'>
   onPrevMonth: () => void;
 }
 
-const getStartYear = () =>
-  findADfromBS(stringDateFormatter(getDateFromNumber(startDateBS)));
-const getEndYear = () =>
-  findADfromBS(
-    stringDateFormatter({
-      year: getDateFromNumber(startDateBS).year + yearMonthDays.length - 1,
-      month: 12,
-      date: yearMonthDays[yearMonthDays.length - 1][11],
-    }),
-  );
-
 const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
   type,
   show,
@@ -88,8 +77,8 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
   }>();
 
   const [adDateRangeForConverter, setAdDateRangeForConverter] = useState({
-    start: getStartYear(),
-    end: getEndYear(),
+    start: getStartYearAD(),
+    end: getEndYearAD(),
   });
 
   const todayText = lang === 'en' ? 'Today' : NEPALI_TODAY;
@@ -118,7 +107,10 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
   };
 
   useEffect(() => {
-    setAdDateRangeForConverter({ start: getStartYear(), end: getEndYear() });
+    setAdDateRangeForConverter({
+      start: getStartYearAD(),
+      end: getEndYearAD(),
+    });
   }, []);
 
   useEffect(() => {
@@ -612,7 +604,7 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
         };
 
         const isYearDisabled = (year: number) => {
-          if (type === 'AD') {
+          if (type === 'AD' && !converterMode) {
             return year < 1;
           }
           if (type === 'BS') {
@@ -699,15 +691,16 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
           day: number,
           month: 'current' | 'prev' | 'next',
         ) => {
+          if (!selectedMonthYear) {
+            return true;
+          }
+
           if (type === 'BS') {
             return checkDayDisabledInBs(month);
           }
 
-          if (type === 'AD') {
+          if (type === 'AD' && !converterMode) {
             return checkDayDisabledInAD(month);
-          }
-          if (!selectedMonthYear) {
-            return true;
           }
 
           if (

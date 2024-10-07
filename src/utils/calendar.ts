@@ -29,6 +29,16 @@ export const getDateFromNumber = (n: number) => {
     toString: () => stringDateFormatter(dateData),
   };
 };
+export const getStartYearAD = () =>
+  findADfromBS(getDateFromNumber(startDateBS).toString());
+export const getEndYearAD = () =>
+  findADfromBS(
+    stringDateFormatter({
+      year: getDateFromNumber(startDateBS).year + yearMonthDays.length - 1,
+      month: 12,
+      date: yearMonthDays[yearMonthDays.length - 1][11],
+    }),
+  );
 
 const getBSYearIndexFromAd = (year: number) => {
   const startADYear = getDateFromNumber(startDateAD).year;
