@@ -1,6 +1,8 @@
 export const startDateAD = 19430414;
 export const startDateBS = 20000101;
 
+export const lowerADDate = -62135596800000;
+
 export const yearMonthDays = [
   [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31], // 2000 BS
   [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],

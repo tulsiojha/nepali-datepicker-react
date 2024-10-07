@@ -7,7 +7,7 @@ export const cn = (...props: Icn) => {
   return classNames(...props);
 };
 
-export const engToNepaliNumber = (number: number) => {
+export const engToNepaliNumber = (number: number | string) => {
   return number
     .toString()
     .split('')

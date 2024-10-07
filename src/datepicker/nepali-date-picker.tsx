@@ -3,8 +3,8 @@ import { AnimationProps } from 'framer-motion';
 import Menu from './menu';
 import useBounds from '../utils/use-bounds';
 import { cn, engToNepNumberFullDate } from '../utils/commons';
-import { reg, stringDateFormatter } from '../utils/calendar';
-import { NEPALI_DIGITS_TO_ENG } from '../utils/data';
+import { getDateFromNumber, reg, stringDateFormatter } from '../utils/calendar';
+import { NEPALI_DIGITS_TO_ENG, startDateBS } from '../utils/data';
 import { CloseIcon } from '../icons';
 import { NepaliDate } from '../utils/nepali-date';
 
@@ -152,6 +152,8 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
     type === 'BS' ? new NepaliDate() : new Date(),
   );
 
+  const cursorPos = useRef(0);
+
   const { bounds } = useBounds(containerRef, [show, open]);
 
   useEffect(() => {
@@ -209,6 +211,10 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
       setSelectedDate(null);
     }
   }, [value]);
+
+  useLayoutEffect(() => {
+    inputRef.current?.setSelectionRange(cursorPos.current, cursorPos.current);
+  }, [inputValue]);
 
   // set focus on input container
   const setFocus = () => {
@@ -303,14 +309,31 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
           }}
           value={convertToLang(lang, inputValue)}
           onChange={(e) => {
-            const { value } = e.target;
+            const { value, selectionStart } = e.target;
             const v = convertToEnglish(value);
+            cursorPos.current = selectionStart || 0;
             setInputValue(v);
 
             const parsed = NepaliDate.parseDate(v);
             if (parsed) {
-              const d = new NepaliDate(v);
-              setSelectedDate(d);
+              if (type === 'AD') {
+                const oneAD = new Date('0001-01-01');
+                let adDate = new Date(v);
+                if (adDate.getTime() < oneAD.getTime()) {
+                  adDate = new Date('0001-01-01');
+                }
+                setSelectedDate(adDate);
+              } else {
+                try {
+                  const d = new NepaliDate(v);
+                  setSelectedDate(d);
+                } catch {
+                  const d = new NepaliDate(
+                    stringDateFormatter(getDateFromNumber(startDateBS)),
+                  );
+                  setSelectedDate(d);
+                }
+              }
             }
 
             setShow(true);

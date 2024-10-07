@@ -11,10 +11,12 @@ const toInt = (value: number) => ~~value;
 const yearDivider = 10000;
 const monthDivider = 100;
 
-const padTwo = (v: number) => `${v}`.padStart(2, '0');
+export const padTwo = (v: number) => `${v}`.padStart(2, '0');
+export const padFour = (v: number) => `${v}`.padStart(4, '0');
+export const padFourNumber = (v: number) => `${v}`.padStart(4, '0');
 
 export const stringDateFormatter = ({ year, month, date }: IDate) =>
-  `${year}-${padTwo(month)}-${padTwo(date)}`;
+  `${padFour(year)}-${padTwo(month)}-${padTwo(date)}`;
 
 export const getDateFromNumber = (n: number) => {
   const year = toInt(n / yearDivider);

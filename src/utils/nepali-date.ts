@@ -43,6 +43,7 @@ class NepaliDate {
       this.#year = yearOrValue;
       this.#month = month!;
       this.#date = date!;
+      this.#setADDate();
     } else if (
       typeof yearOrValue === 'string' ||
       yearOrValue instanceof NepaliDate ||

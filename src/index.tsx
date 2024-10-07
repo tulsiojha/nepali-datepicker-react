@@ -68,10 +68,13 @@ const App = () => {
         type="BS"
         lang="en"
         placeholder="Select date"
+        open
+
         // converterMode
       />
       <NepaliDatePicker
         // value={value ? new NepaliDate(value) : value}
+        type="AD"
         onChange={(e) => {}}
         placeholder="Select date"
         className={() => {

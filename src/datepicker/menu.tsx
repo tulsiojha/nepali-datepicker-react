@@ -9,6 +9,8 @@ import {
   getMonthInfo,
   getYearsArray,
   groupDates,
+  padFourNumber,
+  padTwo,
   stringDateFormatter,
 } from '../utils/calendar';
 import {
@@ -25,6 +27,7 @@ import {
   NEPALI_MONTH,
   NEPALI_TODAY,
   NEPALI_WEEK,
+  lowerADDate,
   startDateBS,
   yearMonthDays,
 } from '../utils/data';
@@ -176,12 +179,19 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
       return false;
     }
 
-    if (type === 'AD') {
-      return true;
-    }
-
     const startBSYear = getDateFromNumber(startDateBS).year;
-    const y = (selectedMonthYear.year || 0) - 1;
+    const y = (selectedMonthYear.year || 1) - 1;
+
+    if (type === 'AD') {
+      if (
+        new Date(
+          `${padFourNumber(y)}-${padTwo(selectedMonthYear.month + 1)}-01`,
+        ).getTime() > lowerADDate
+      ) {
+        return true;
+      }
+      return false;
+    }
 
     if (y >= startBSYear) {
       return true;
@@ -214,8 +224,18 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
   };
 
   const canGoPrevDecade = () => {
+    if (!selectedMonthYear) {
+      return false;
+    }
     if (type === 'AD') {
-      return true;
+      if (
+        new Date(
+          `${padFourNumber(currentYearRangeIndex)}-${padTwo(selectedMonthYear.month + 1)}-01`,
+        ).getTime() > lowerADDate
+      ) {
+        return true;
+      }
+      return false;
     }
     const startBSYear = getDateFromNumber(startDateBS).year;
     if (currentYearRangeIndex > startBSYear) {
@@ -237,8 +257,18 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
   };
 
   const canGoPrevMonth = () => {
+    if (!selectedMonthYear) {
+      return false;
+    }
     if (type === 'AD') {
-      return true;
+      if (
+        new Date(
+          `${padFourNumber(selectedMonthYear.year)}-${padTwo(selectedMonthYear.month + 1)}-01`,
+        ).getTime() > lowerADDate
+      ) {
+        return true;
+      }
+      return false;
     }
     const startBSYear = getDateFromNumber(startDateBS);
 
@@ -383,6 +413,31 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
     return false;
   };
 
+  const checkDayDisabledInAD = (month: string) => {
+    if (!selectedMonthYear) {
+      return true;
+    }
+
+    let m = selectedMonthYear.month;
+    let y = selectedMonthYear.year;
+    switch (month) {
+      case 'prev': {
+        m -= 1;
+        if (m < 0) {
+          y -= 1;
+          if (y < 1) {
+            return true;
+          }
+          return false;
+        }
+        return false;
+      }
+      case 'next':
+      default:
+        return false;
+    }
+  };
+
   const handleOnChange = (month: string, date: number) => {
     if (!selectedMonthYear) {
       return;
@@ -410,9 +465,11 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
       }
     }
 
+    let x = `${padFourNumber(y)}-${padTwo(m + 1)}-${padTwo(date)}`;
+
     onChange?.(
       // @ts-ignore
-      type === 'BS' ? new NepaliDate(y, m, date) : new Date(y, m, date),
+      type === 'BS' ? new NepaliDate(y, m, date) : new Date(x),
     );
   };
 
@@ -555,8 +612,8 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
         };
 
         const isYearDisabled = (year: number) => {
-          if (!converterMode) {
-            return false;
+          if (type === 'AD') {
+            return year < 1;
           }
           if (type === 'BS') {
             return false;
@@ -576,7 +633,10 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
               return (
                 <tr key={i}>
                   {ma.map((m, mIndex) => {
-                    const yearText = lang === 'en' ? m : engToNepaliNumber(m);
+                    const yearText =
+                      lang === 'en'
+                        ? padFourNumber(m)
+                        : engToNepaliNumber(padFourNumber(m));
                     const indexNumber =
                       getYearIndex(index, mIndex) + range.start;
                     const yearDisabled = isYearDisabled(indexNumber);
@@ -643,10 +703,9 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
             return checkDayDisabledInBs(month);
           }
 
-          if (!converterMode) {
-            return false;
+          if (type === 'AD') {
+            return checkDayDisabledInAD(month);
           }
-
           if (!selectedMonthYear) {
             return true;
           }
@@ -804,7 +863,7 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
   ]);
 
   const getYearRange = useMemo(() => {
-    const yearRange = `${getDecadeRange(currentYearRangeIndex).start}-${getDecadeRange(currentYearRangeIndex).end}`;
+    const yearRange = `${padFourNumber(getDecadeRange(currentYearRangeIndex).start)}-${padFourNumber(getDecadeRange(currentYearRangeIndex).end)}`;
     return lang === 'en' ? yearRange : engToNepNumberFullDate(yearRange);
   }, [currentYearRangeIndex]);
 
@@ -872,8 +931,8 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
 
   const getHeaderYearText = () => {
     return lang === 'en'
-      ? `${selectedMonthYear?.year}`
-      : engToNepaliNumber(selectedMonthYear?.year || 0);
+      ? padFourNumber(selectedMonthYear?.year || 1)
+      : engToNepaliNumber(padFourNumber(selectedMonthYear?.year || 1));
   };
 
   const getHeaderMonthText = () => {
@@ -946,7 +1005,13 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
             ) : (
               <div className="zener-flex zener-flex-row zener-items-center zener-text-sm zener-justify-between zener-py-2 zener-border-0 zener-border-b zener-border-b-gray-300 zener-border-solid">
                 <button
-                  className="month-prev-button zener-p-2 zener-cursor-pointer zener-text-gray-400 hover:zener-text-black disabled:zener-text-gray-200"
+                  className={cn(
+                    'month-prev-button zener-p-2 zener-text-gray-400 hover:zener-text-black disabled:zener-text-gray-200',
+                    {
+                      'zener-cursor-pointer': !isPrevDisabled(),
+                      '!zener-cursor-default': isPrevDisabled(),
+                    },
+                  )}
                   disabled={isPrevDisabled()}
                   onClick={onPrevClicked}
                   tabIndex={-1}
@@ -979,7 +1044,13 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                   </div>
                 )}
                 <button
-                  className="month-next-button zener-p-2 zener-cursor-pointer zener-text-gray-400 hover:zener-text-black disabled:zener-text-gray-200"
+                  className={cn(
+                    'month-next-button zener-p-2 zener-text-gray-400 hover:zener-text-black disabled:zener-text-gray-200',
+                    {
+                      'zener-cursor-pointer': !isNextDisabled(),
+                      '!zener-cursor-default': isNextDisabled(),
+                    },
+                  )}
                   tabIndex={-1}
                   disabled={isNextDisabled()}
                   onClick={onNextClick}
