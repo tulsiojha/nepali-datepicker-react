@@ -1,10 +1,10 @@
-import ReactDOM from 'react-dom/client';
 import { useState } from 'react';
-import { cn } from './utils/commons';
-import { NextIcon, PreviousIcon } from './icons';
-import { baishakOne } from './utils/data';
-import { getDateFromNumber, stringDateFormatter } from './utils/calendar';
+import ReactDOM from 'react-dom/client';
 import NepaliDatePicker, { NepaliDate } from './datepicker';
+import { NextIcon, PreviousIcon } from './icons';
+import { getDateFromNumber, stringDateFormatter } from './utils/calendar';
+import { cn } from './utils/commons';
+import { baishakOne } from './utils/data';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -14,6 +14,25 @@ const App = () => {
   const [expanded, setExpanded] = useState(false);
   return (
     <div>
+    <div>
+    {new NepaliDate().format('DD/MM/YYYY')}
+    </div>
+    <div>
+    {new NepaliDate().format('YYYY-MM-DD')}
+    </div>
+    <div>
+    {new NepaliDate().format('YYYY-M-D')}
+    </div>
+    <div>
+    {new NepaliDate().format("MMMM DD, YYYY")}
+    </div>
+
+    <div>
+    {new NepaliDate().format("MMMM DD, YYYY, dddd")}
+    </div>
+    <div>
+    {new NepaliDate().format("[YYYYescape] YYYY-MM-DD")}
+    </div>
       <button
         onClick={() => {
           function iterateDates(startDate: any, endDate: any) {
