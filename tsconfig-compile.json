@@ -15,7 +15,6 @@
     "jsx": "react-jsx",
     "lib": ["DOM", "ESNext", "DOM.Iterable"],
     "moduleResolution": "node",
-    "noEmit": true,
     "noFallthroughCasesInSwitch": false,
     "noImplicitAny": true,
     "noImplicitReturns": false,
