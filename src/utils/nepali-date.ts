@@ -1,18 +1,18 @@
 import { ILang } from '../datepicker/nepali-date-picker';
 import {
-  findADfromBS,
-  findBSfromAD,
-  getCurrentDate,
-  stringDateFormatter,
+    findADfromBS,
+    findBSfromAD,
+    getCurrentDate,
+    stringDateFormatter,
 } from './calendar';
 import { engToNepNumberFullDate, engToNepaliNumber } from './commons';
 import {
-  ENGLISH_NEPALI_MONTH,
-  ENGLISH_WEEK,
-  ENGLISH_WEEK_FULL,
-  NEPALI_MONTH,
-  NEPALI_WEEK,
-  NEPALI_WEEK_FULL,
+    ENGLISH_NEPALI_MONTH,
+    ENGLISH_WEEK,
+    ENGLISH_WEEK_FULL,
+    NEPALI_MONTH,
+    NEPALI_WEEK,
+    NEPALI_WEEK_FULL,
 } from './data';
 
 const reg = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[012])$/;
@@ -96,6 +96,43 @@ class NepaliDate {
       ).toString(),
     );
   };
+
+  #padZero = (num:number|string) =>`${num}`.padStart(2,'0') ;
+
+  format(format:string="", lang: ILang = 'en') {
+    if(!format){
+      return this.toString(lang)
+    }
+    const date =this.#padZero(this.getDate('en'))
+    const month = this.#padZero(this.#month+1)
+    const replacements = {
+        'DD': lang==="en"?date:engToNepaliNumber(date),
+        'D': this.getDate(lang),
+        'YYYY': String(this.getFullYear(lang)),
+        'YY': String(this.getFullYear(lang)).slice(-2),
+        'M': lang === "en"?this.#month+1:engToNepaliNumber(this.#month+1),
+        'MM': lang==='en'?month:engToNepaliNumber(month),
+        'MMM': lang==='en'?this.getMonthName(lang).slice(0, 3):this.getMonthName(lang),
+        'MMMM': this.getMonthName(lang),
+        'd': this.getDay(lang), // Abbreviated day name
+        'dd': lang==="en"?this.getDayNameFull(lang).slice(0, 2):this.getDayName(lang) , // Abbreviated day name
+        'ddd': lang==="en"?this.getDayNameFull(lang).slice(0, 3):this.getDayName(lang), // Abbreviated day name
+        'dddd': this.getDayNameFull(lang) // Full day name
+    };
+
+    // Replace format tokens with actual date values
+    const tokenReg =/(\[.*?\])|(MMMM|MMM|dddd|ddd|dd|d|DD|D|MM|M|YYYY|YY)/g
+    return format.replace(tokenReg, (match, literal) => {
+            if (literal) {
+                // If it's a literal (like [d]), strip the brackets and return it as is
+                return literal.slice(1, -1);
+            }
+            // Otherwise, it's a token, so replace it using the replacements object
+            // @ts-ignore
+            return replacements[match];
+        });
+  }
+
 
   toString(lang: ILang = 'en') {
     const d = stringDateFormatter({
@@ -238,4 +275,4 @@ class NepaliDate {
   };
 }
 
-export { findADfromBS as toAD, findBSfromAD as toBS, NepaliDate };
+export { NepaliDate, findADfromBS as toAD, findBSfromAD as toBS };

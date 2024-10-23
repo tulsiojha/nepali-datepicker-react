@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-// @ts-ignore
-
 import { sassPlugin } from 'esbuild-sass-plugin';
 import * as esbuild from 'esbuild';
 import * as tsup from 'tsup';
