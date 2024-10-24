@@ -3,7 +3,11 @@ import {
     findADfromBS,
     findBSfromAD,
     getCurrentDate,
-    stringDateFormatter,
+    manipulateDays,
+    manipulateMonths,
+    manipulateWeeks,
+    manipulateYears,
+    stringDateFormatter
 } from './calendar';
 import { engToNepNumberFullDate, engToNepaliNumber } from './commons';
 import {
@@ -14,6 +18,8 @@ import {
     NEPALI_WEEK,
     NEPALI_WEEK_FULL,
 } from './data';
+
+type IManipulateDate = 'day'|'week'|'month'|'year'|'d'|'w'|'m'|'y'
 
 const reg = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[012])$/;
 
@@ -243,6 +249,39 @@ class NepaliDate {
       return lang === 'en' ? ENGLISH_WEEK_FULL[index] : NEPALI_WEEK_FULL[index];
     }
     return lang === 'en' ? ENGLISH_WEEK[index] : NEPALI_WEEK[index];
+  }
+
+
+  #manipulate(v:number, type:IManipulateDate){
+    const cDate = this.toString()
+    switch(type){
+     case 'day':
+     case 'd':
+     return manipulateDays(cDate, v)
+     case 'week':
+     case 'w':
+     return manipulateWeeks(cDate, v)
+     case 'month':
+     case 'm':
+     return manipulateMonths(cDate, v)
+     case 'year':
+     case 'y':
+     return manipulateYears(cDate, v)
+     default:
+     throw Error("Invalid type. Type must be one of 'day'|'month'|'year'|'d'|'m'|'y'")
+    }
+  }
+
+  subtract(value:number, type:IManipulateDate){
+    const v = -Math.abs(value)
+    const m = this.#manipulate(v,type)
+    return new NepaliDate(m.year, m.month, m.date)
+  }
+
+  add(value:number, type:IManipulateDate){
+    const v = Math.abs(value)
+    const m = this.#manipulate(v,type)
+    return new NepaliDate(m.year, m.month, m.date)
   }
 
   static now(lang: ILang = 'en') {
