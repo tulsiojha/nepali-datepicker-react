@@ -12,6 +12,9 @@ const root = ReactDOM.createRoot(
 const App = () => {
   const [value, setValue] = useState<NepaliDate | Date | null>(new Date());
   const [expanded, setExpanded] = useState(false);
+  const d = new NepaliDate()
+  console.log("date", 'h')
+  // console.log("date", d.toAD(), d.toJson(), x.toString())
   return (
     <div>
     <div>
@@ -28,7 +31,7 @@ const App = () => {
     </div>
 
     <div>
-    {new NepaliDate().format("MMMM DD, YYYY, dddd")}
+    {new NepaliDate().format("MMM DD, YYYY, dd")}
     </div>
     <div>
     {new NepaliDate().format("[YYYYescape] YYYY-MM-DD")}
