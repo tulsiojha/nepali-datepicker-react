@@ -205,121 +205,164 @@ export const getCurrentDate = ({ type = 'np' }: { type?: 'en' | 'np' }) => {
   }
 };
 
-
-const manipulate=(currentDate: string, value: number)=>{
-  const parsed = parseDateFromString(currentDate)
+const manipulate = (currentDate: string, value: number) => {
+  const parsed = parseDateFromString(currentDate);
   if (parsed) {
-    return parsed
+    return parsed;
+  } else {
+    throw Error(
+      `Invalid date ${currentDate} to ${value < 0 ? 'subtract' : 'add'}.`,
+    );
   }
-  else{
-      throw Error(`Invalid date ${currentDate} to ${value<0?'subtract':'add'}.`)
-    }
-}
+};
 
 export const manipulateDays = (currentDate: string, days: number) => {
-  const parsed = manipulate(currentDate, days)
-  const ad = findADfromBS(stringDateFormatter(parsed))
-  const date = new Date(ad.toString())
-  date.setDate(date.getDate()+days)
-  try{
-   return findBSfromAD(stringDateFormatter({year:date.getFullYear(), month:date.getMonth()+1, date:date.getDate()}))
-  }catch(err){
-    if(days<0){
-       throw Error(`Cannot subtract day(s). Subtracting ${Math.abs(days)} day(s) results in date smaller than ${getDateFromNumber(startDateBS).year}`)
-      }
-      throw Error(`Cannot add day(s). Adding ${Math.abs(days)} day(s) results in date greater than ${getDateFromNumber(startDateBS).year+yearMonthDays.length -1}`)
+  const parsed = manipulate(currentDate, days);
+  const ad = findADfromBS(stringDateFormatter(parsed));
+  const date = new Date(ad.toString());
+  date.setDate(date.getDate() + days);
+  try {
+    return findBSfromAD(
+      stringDateFormatter({
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        date: date.getDate(),
+      }),
+    );
+  } catch (err) {
+    if (days < 0) {
+      throw Error(
+        `Cannot subtract day(s). Subtracting ${Math.abs(days)} day(s) results in date smaller than ${getDateFromNumber(startDateBS).year}`,
+      );
+    }
+    throw Error(
+      `Cannot add day(s). Adding ${Math.abs(days)} day(s) results in date greater than ${getDateFromNumber(startDateBS).year + yearMonthDays.length - 1}`,
+    );
   }
-}
-
+};
 
 export const manipulateWeeks = (currentDate: string, weeks: number) => {
-  const parsed = manipulate(currentDate, weeks)
-  const ad = findADfromBS(stringDateFormatter(parsed))
-  const date = new Date(ad.toString())
-  date.setDate(date.getDate()+(weeks*7))
-  try{
-   return findBSfromAD(stringDateFormatter({year:date.getFullYear(), month:date.getMonth()+1, date:date.getDate()}))
-  }catch(err){
-    if(weeks<0){
-       throw Error(`Cannot subtract week(s). Subtracting ${Math.abs(weeks)} week(s) results in date smaller than ${getDateFromNumber(startDateBS).year}`)
-      }
-      throw Error(`Cannot add week(s). Adding ${Math.abs(weeks)} week(s) results in date greater than ${getDateFromNumber(startDateBS).year+yearMonthDays.length -1}`)
+  const parsed = manipulate(currentDate, weeks);
+  const ad = findADfromBS(stringDateFormatter(parsed));
+  const date = new Date(ad.toString());
+  date.setDate(date.getDate() + weeks * 7);
+  try {
+    return findBSfromAD(
+      stringDateFormatter({
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        date: date.getDate(),
+      }),
+    );
+  } catch (err) {
+    if (weeks < 0) {
+      throw Error(
+        `Cannot subtract week(s). Subtracting ${Math.abs(weeks)} week(s) results in date smaller than ${getDateFromNumber(startDateBS).year}`,
+      );
+    }
+    throw Error(
+      `Cannot add week(s). Adding ${Math.abs(weeks)} week(s) results in date greater than ${getDateFromNumber(startDateBS).year + yearMonthDays.length - 1}`,
+    );
   }
-}
+};
 
-export const manipulateMonths=(currentDate:string, months:number)=>{
-  const parsed = manipulate(currentDate, months)
-  const { year, month, date }  = parsed
-   let yearIndex = getBSYearIndexFromBS(year)
-   let incMonth = month-1+months
+export const manipulateMonths = (currentDate: string, months: number) => {
+  const parsed = manipulate(currentDate, months);
+  const { year, month, date } = parsed;
+  let yearIndex = getBSYearIndexFromBS(year);
+  let incMonth = month - 1 + months;
 
-   yearIndex += Math.floor(incMonth / 12);
-   if(yearIndex > yearMonthDays.length-1 || yearIndex < 0){
-     if(months<0){
-      throw Error(`Cannot subtract month(s). Subtracting ${Math.abs(months)} month(s) results in date smaller than ${getDateFromNumber(startDateBS).year}`)
-     }
-     throw Error(`Cannot add month(s). Adding ${Math.abs(months)} month(s) results in date greater than ${getDateFromNumber(startDateBS).year+yearMonthDays.length -1}`)
-   }
-   incMonth %= 12;
-   if(incMonth < 0){
-     incMonth = 12 + incMonth
-   }
-   let incDate = date
+  yearIndex += Math.floor(incMonth / 12);
+  if (yearIndex > yearMonthDays.length - 1 || yearIndex < 0) {
+    if (months < 0) {
+      throw Error(
+        `Cannot subtract month(s). Subtracting ${Math.abs(months)} month(s) results in date smaller than ${getDateFromNumber(startDateBS).year}`,
+      );
+    }
+    throw Error(
+      `Cannot add month(s). Adding ${Math.abs(months)} month(s) results in date greater than ${getDateFromNumber(startDateBS).year + yearMonthDays.length - 1}`,
+    );
+  }
+  incMonth %= 12;
+  if (incMonth < 0) {
+    incMonth = 12 + incMonth;
+  }
+  let incDate = date;
 
-   const daysInIncMonth = yearMonthDays[yearIndex][incMonth]
+  const daysInIncMonth = yearMonthDays[yearIndex][incMonth];
 
-   if(incDate > daysInIncMonth){
-     incMonth += 1
-     incDate -= daysInIncMonth
-     if(incMonth>11){
-       incMonth = 0
-       yearIndex +=1
-     }
-   }
+  if (incDate > daysInIncMonth) {
+    incMonth += 1;
+    incDate -= daysInIncMonth;
+    if (incMonth > 11) {
+      incMonth = 0;
+      yearIndex += 1;
+    }
+  }
 
-   if(yearIndex > yearMonthDays.length-1 || yearIndex < 0){
-     if(months<0){
-      throw Error(`Cannot subtract month(s). Subtracting ${Math.abs(months)} month(s) results in date smaller than ${getDateFromNumber(startDateBS).year}`)
-     }
-     throw Error(`Cannot add month(s). Adding ${Math.abs(months)} month(s) results in date greater than ${getDateFromNumber(startDateBS).year+yearMonthDays.length -1}`)
-   }
+  if (yearIndex > yearMonthDays.length - 1 || yearIndex < 0) {
+    if (months < 0) {
+      throw Error(
+        `Cannot subtract month(s). Subtracting ${Math.abs(months)} month(s) results in date smaller than ${getDateFromNumber(startDateBS).year}`,
+      );
+    }
+    throw Error(
+      `Cannot add month(s). Adding ${Math.abs(months)} month(s) results in date greater than ${getDateFromNumber(startDateBS).year + yearMonthDays.length - 1}`,
+    );
+  }
 
-   return { year:getDateFromNumber(startDateBS).year+yearIndex, month:incMonth,date:incDate }
-}
+  return {
+    year: getDateFromNumber(startDateBS).year + yearIndex,
+    month: incMonth,
+    date: incDate,
+  };
+};
 
 export const manipulateYears = (currentDate: string, years: number) => {
-  const parsed = manipulate(currentDate, years)
-  const { year, month, date }  = parsed
-   let yearIndex = getBSYearIndexFromBS(year)
-    yearIndex +=years
-    if(yearIndex > yearMonthDays.length-1 || yearIndex < 0){
-      if(years<0){
-       throw Error(`Cannot subtract year(s). Subtracting ${Math.abs(years)} year(s) results in date smaller than ${getDateFromNumber(startDateBS).year}`)
-      }
-      throw Error(`Cannot add year(s). Adding ${Math.abs(years)} year(s) results in date greater than ${getDateFromNumber(startDateBS).year+yearMonthDays.length -1}`)
+  const parsed = manipulate(currentDate, years);
+  const { year, month, date } = parsed;
+  let yearIndex = getBSYearIndexFromBS(year);
+  yearIndex += years;
+  if (yearIndex > yearMonthDays.length - 1 || yearIndex < 0) {
+    if (years < 0) {
+      throw Error(
+        `Cannot subtract year(s). Subtracting ${Math.abs(years)} year(s) results in date smaller than ${getDateFromNumber(startDateBS).year}`,
+      );
     }
+    throw Error(
+      `Cannot add year(s). Adding ${Math.abs(years)} year(s) results in date greater than ${getDateFromNumber(startDateBS).year + yearMonthDays.length - 1}`,
+    );
+  }
 
-   let incMonth = month-1
-    const daysInIncMonth = yearMonthDays[yearIndex][incMonth]
-    let incDate = date
-    if(incDate > daysInIncMonth){
-      incMonth += 1
-      incDate -= daysInIncMonth
-      if(incMonth>11){
-        incMonth = 0
-        yearIndex +=1
-      }
+  let incMonth = month - 1;
+  const daysInIncMonth = yearMonthDays[yearIndex][incMonth];
+  let incDate = date;
+  if (incDate > daysInIncMonth) {
+    incMonth += 1;
+    incDate -= daysInIncMonth;
+    if (incMonth > 11) {
+      incMonth = 0;
+      yearIndex += 1;
     }
+  }
 
-    if(yearIndex > yearMonthDays.length-1 || yearIndex < 0){
-      if(years<0){
-       throw Error(`Cannot subtract year(s). Subtracting ${Math.abs(years)} year(s) results in date smaller than ${getDateFromNumber(startDateBS).year}`)
-      }
-      throw Error(`Cannot add year(s). Adding ${Math.abs(years)} year(s) results in date greater than ${getDateFromNumber(startDateBS).year+yearMonthDays.length -1}`)
+  if (yearIndex > yearMonthDays.length - 1 || yearIndex < 0) {
+    if (years < 0) {
+      throw Error(
+        `Cannot subtract year(s). Subtracting ${Math.abs(years)} year(s) results in date smaller than ${getDateFromNumber(startDateBS).year}`,
+      );
     }
+    throw Error(
+      `Cannot add year(s). Adding ${Math.abs(years)} year(s) results in date greater than ${getDateFromNumber(startDateBS).year + yearMonthDays.length - 1}`,
+    );
+  }
 
-    return { year:getDateFromNumber(startDateBS).year+yearIndex, month:incMonth,date:incDate }
-}
+  return {
+    year: getDateFromNumber(startDateBS).year + yearIndex,
+    month: incMonth,
+    date: incDate,
+  };
+};
 
 export const getMonthInfo = ({
   type = 'BS',
