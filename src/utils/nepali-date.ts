@@ -10,7 +10,12 @@ import {
   manipulateYears,
   stringDateFormatter,
 } from './calendar';
-import { engToNepNumberFullDate, engToNepaliNumber } from './commons';
+import {
+  engToNepNumberFullDate,
+  engToNepaliNumber,
+  formatADDate,
+  padZero,
+} from './commons';
 import {
   ENGLISH_NEPALI_MONTH,
   ENGLISH_WEEK,
@@ -20,6 +25,21 @@ import {
   NEPALI_WEEK_FULL,
   startDateBS,
 } from './data';
+
+type LangReturnType<T extends ILang> = T extends 'en' ? number : string;
+type ADReturnType<T extends ILang> = T extends 'en'
+  ? {
+      year: number;
+      month: number;
+      date: number;
+      toString: () => string;
+    }
+  : {
+      year: string;
+      month: string;
+      date: string;
+      toString: () => string;
+    };
 
 interface DateObject {
   year: number;
@@ -124,14 +144,13 @@ class NepaliDate {
     );
   };
 
-  #padZero = (num: number | string) => `${num}`.padStart(2, '0');
-
   format(format: string = '', lang: ILang = 'en') {
     if (!format) {
       return this.toString(lang);
     }
-    const date = this.#padZero(this.getDate('en'));
-    const month = this.#padZero(this.#month + 1);
+    const date = padZero(this.getDate('en'));
+    const month = padZero(this.#month + 1);
+
     const replacements = {
       DD: lang === 'en' ? date : engToNepaliNumber(date),
       D: this.getDate(lang),
@@ -212,7 +231,7 @@ class NepaliDate {
     }
   }
 
-  toAD(lang: ILang = 'en') {
+  toAD<T extends ILang = 'en'>(lang: T = 'en' as T): ADReturnType<T> {
     const d = findADfromBS(
       stringDateFormatter({
         year: this.#year,
@@ -222,7 +241,7 @@ class NepaliDate {
     );
     switch (lang) {
       case 'en':
-        return d;
+        return d as ADReturnType<T>;
       case 'np':
       default: {
         return {
@@ -230,7 +249,7 @@ class NepaliDate {
           month: engToNepaliNumber(d.month),
           date: engToNepaliNumber(d.date),
           toString: () => engToNepNumberFullDate(d.toString()),
-        };
+        } as ADReturnType<T>;
       }
     }
   }
@@ -239,12 +258,16 @@ class NepaliDate {
     return new Date(this.toAD('en').toString());
   }
 
-  getFullYear(lang: ILang = 'en') {
-    return lang === 'en' ? this.#year : engToNepaliNumber(this.#year);
+  getFullYear<T extends ILang = 'en'>(lang: T = 'en' as T): LangReturnType<T> {
+    return (
+      lang === 'en' ? this.#year : engToNepaliNumber(this.#year)
+    ) as LangReturnType<T>;
   }
 
-  getMonth(lang: ILang = 'en') {
-    return lang === 'en' ? this.#month : engToNepaliNumber(this.#month);
+  getMonth<T extends ILang = 'en'>(lang: T = 'en' as T): LangReturnType<T> {
+    return (
+      lang === 'en' ? this.#month : engToNepaliNumber(this.#month)
+    ) as LangReturnType<T>;
   }
 
   getMonthName(lang: ILang = 'en') {
@@ -258,14 +281,18 @@ class NepaliDate {
     return lang === 'en' ? ENGLISH_NEPALI_MONTH[index] : NEPALI_MONTH[index];
   }
 
-  getDate(lang: ILang = 'en') {
-    return lang === 'en' ? this.#date : engToNepaliNumber(this.#date);
+  getDate<T extends ILang = 'en'>(lang: T = 'en' as T): LangReturnType<T> {
+    return (
+      lang === 'en' ? this.#date : engToNepaliNumber(this.#date)
+    ) as LangReturnType<T>;
   }
 
-  getDay(lang: ILang = 'en') {
-    return lang === 'en'
-      ? this.#adDate.getDay()
-      : engToNepaliNumber(this.#adDate.getDay());
+  getDay<T extends ILang = 'en'>(lang: T = 'en' as T): LangReturnType<T> {
+    return (
+      lang === 'en'
+        ? this.#adDate.getDay()
+        : engToNepaliNumber(this.#adDate.getDay())
+    ) as LangReturnType<T>;
   }
 
   getDayName(lang: ILang = 'en') {
@@ -431,4 +458,4 @@ class NepaliDate {
   };
 }
 
-export { NepaliDate, findADfromBS as toAD, findBSfromAD as toBS };
+export { NepaliDate, findADfromBS as toAD, findBSfromAD as toBS, formatADDate };

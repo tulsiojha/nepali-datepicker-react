@@ -2,14 +2,7 @@ import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AnimationProps } from 'framer-motion';
 import Menu from './menu';
 import useBounds from '../utils/use-bounds';
-import { cn, engToNepNumberFullDate } from '../utils/commons';
-import {
-  getDateFromNumber,
-  getEndYearAD,
-  reg,
-  stringDateFormatter,
-} from '../utils/calendar';
-import { NEPALI_DIGITS_TO_ENG, startDateAD, startDateBS } from '../utils/data';
+import { cn, formatADDate } from '../utils/commons';
 import { CloseIcon } from '../icons';
 import { NepaliDate } from '../utils/nepali-date';
 
@@ -98,36 +91,11 @@ export interface INepaliDatePicker<
   suffix?: ISuffixRender;
   showclear?: boolean;
   value?: NepaliDate | Date | string | null;
-  inputReadOnly?: boolean;
   className?:
     | string
     | (() => { focus?: string; disabled?: string; default?: string });
+  format?: string;
 }
-
-const convertToLang = (lang: ILang, value: string) => {
-  switch (lang) {
-    case 'en':
-      return value;
-    case 'np':
-    default: {
-      return engToNepNumberFullDate(value);
-    }
-  }
-};
-
-const convertToEnglish = (value: string) => {
-  const x = value.split('').map((v) => {
-    // @ts-ignore
-    if (NEPALI_DIGITS_TO_ENG[v]) {
-      // @ts-ignore
-      return NEPALI_DIGITS_TO_ENG[v];
-    } else {
-      return v;
-    }
-  });
-
-  return x.join('');
-};
 
 const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
   type = 'BS',
@@ -147,14 +115,14 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
   showclear = true,
   converterMode,
   animation,
-  inputReadOnly,
+  format = 'YYYY-MM-DD',
 }: INepaliDatePicker<T>) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const portalRef = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState(false);
   const [selectedDate, setSelectedDate] = useState<NepaliDate | Date | null>();
-  const [inputValue, setInputValue] = useState<any>('');
+  const [inputValue, setInputValue] = useState<string>('');
   const [today, setToday] = useState(
     type === 'BS' ? new NepaliDate() : new Date(),
   );
@@ -174,15 +142,9 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
   useEffect(() => {
     if (selectedDate) {
       if (type === 'BS') {
-        setInputValue(selectedDate.toString());
+        setInputValue((selectedDate as NepaliDate).format(format, lang));
       } else {
-        setInputValue(
-          stringDateFormatter({
-            year: selectedDate.getFullYear() as number,
-            month: (selectedDate.getMonth() as number) + 1,
-            date: selectedDate.getDate() as number,
-          }),
-        );
+        setInputValue(formatADDate(selectedDate as Date, format, lang));
       }
     } else {
       setInputValue('');
@@ -286,11 +248,8 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
           ref={inputRef}
           type="text"
           disabled={disabled}
-          readOnly={inputReadOnly}
+          readOnly={true}
           onClick={() => {
-            if (!inputReadOnly) {
-              inputRef.current?.removeAttribute('readonly');
-            }
             if (!disabled) {
               if (!open) {
                 setShow((prev) => !prev);
@@ -309,9 +268,6 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
             }
             removeFocus();
             closeMenu();
-            if (!inputReadOnly) {
-              inputRef.current?.removeAttribute('readonly');
-            }
           }}
           onFocus={() => {
             if (disabled) {
@@ -319,51 +275,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
             }
             setFocus();
           }}
-          value={convertToLang(lang, inputValue)}
-          onChange={(e) => {
-            const { value, selectionStart } = e.target;
-            const v = convertToEnglish(value);
-            cursorPos.current = selectionStart || 0;
-            setInputValue(v);
-
-            const parsed = NepaliDate.parseDate(v);
-            if (parsed) {
-              if (type === 'AD') {
-                const oneAD = converterMode
-                  ? new Date(getDateFromNumber(startDateAD).toString())
-                  : new Date('0001-01-01');
-                let adDate = new Date(v);
-                if (adDate.getTime() < oneAD.getTime()) {
-                  adDate = new Date(oneAD);
-                }
-                if (
-                  adDate.getTime() >
-                  new Date(getEndYearAD().toString()).getTime()
-                ) {
-                  adDate = new Date(getEndYearAD().toString());
-                }
-                setSelectedDate(adDate);
-                // @ts-ignore
-                onChange?.(adDate);
-              } else {
-                try {
-                  const d = new NepaliDate(v);
-                  setSelectedDate(d);
-                  // @ts-ignore
-                  onChange?.(d);
-                } catch {
-                  const d = new NepaliDate(
-                    stringDateFormatter(getDateFromNumber(startDateBS)),
-                  );
-                  setSelectedDate(d);
-                  // @ts-ignore
-                  onChange?.(d);
-                }
-              }
-            }
-
-            setShow(true);
-          }}
+          value={inputValue}
           onKeyDown={(e) => {
             if (disabled) {
               return;
@@ -371,15 +283,6 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
             const { code, ctrlKey } = e;
 
             switch (code) {
-              case 'Enter':
-                {
-                  e.preventDefault();
-                  const value = convertToEnglish(inputValue);
-                  if (reg.test(value)) {
-                    setShow(false);
-                  }
-                }
-                break;
               case 'ArrowUp':
               case 'ArrowDown':
                 e.preventDefault();
@@ -408,7 +311,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
           }}
           placeholder={placeholder}
         />
-        {/* Suffix aka clear and dropdown icon */}
+        {/* Suffix -- clear and dropdown icon */}
 
         {suffix?.({
           onClear: clear,
@@ -443,9 +346,6 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
         today={today}
         selectedDate={selectedDate}
         onChange={(e) => {
-          if (!inputReadOnly) {
-            inputRef.current?.setAttribute('readonly', 'true');
-          }
           setSelectedDate(e);
           // @ts-ignore
           onChange?.(e);

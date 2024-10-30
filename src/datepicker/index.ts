@@ -1,7 +1,7 @@
 import '../css/index.scss';
 import NepaliDatePicker from './nepali-date-picker';
 
-export { toAD, toBS, NepaliDate } from '../utils/nepali-date';
+export { toAD, toBS, formatADDate, NepaliDate } from '../utils/nepali-date';
 
 export type {
   INepaliDatePicker,

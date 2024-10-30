@@ -122,11 +122,11 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
       let y = 0;
       let m = 0;
       if (selectedDate) {
-        m = selectedDate.getMonth() as number;
-        y = selectedDate.getFullYear() as number;
+        m = selectedDate.getMonth();
+        y = selectedDate.getFullYear();
       } else if (today) {
-        m = today.getMonth() as number;
-        y = today.getFullYear() as number;
+        m = today.getMonth();
+        y = today.getFullYear();
       }
       changeMonth({ m, y });
     }

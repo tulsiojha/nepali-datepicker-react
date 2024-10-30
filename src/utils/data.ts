@@ -214,6 +214,21 @@ export const AD_MONTH = [
   'Dec',
 ];
 
+export const AD_MONTH_FULL = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
 export const AD_MONTH_NEPALI = [
   'जनवरी',
   'फेब्रुअरी',

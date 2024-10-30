@@ -10,32 +10,21 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
 const App = () => {
-  const [value, setValue] = useState<NepaliDate | Date | null>(new Date());
+  const [value, setValue] = useState<NepaliDate | Date | null>(
+    new NepaliDate(),
+  );
   const [expanded, setExpanded] = useState(false);
-  const d = new NepaliDate()
-  console.log("date", 'h')
   // console.log("date", d.toAD(), d.toJson(), x.toString())
+
   return (
     <div>
-    <div>
-    {new NepaliDate().format('DD/MM/YYYY')}
-    </div>
-    <div>
-    {new NepaliDate().format('YYYY-MM-DD')}
-    </div>
-    <div>
-    {new NepaliDate().format('YYYY-M-D')}
-    </div>
-    <div>
-    {new NepaliDate().format("MMMM DD, YYYY")}
-    </div>
+      <div>{new NepaliDate().format('DD/MM/YYYY')}</div>
+      <div>{new NepaliDate().format('YYYY-MM-DD')}</div>
+      <div>{new NepaliDate().format('YYYY-M-D')}</div>
+      <div>{new NepaliDate().format('MMMM DD, YYYY')}</div>
 
-    <div>
-    {new NepaliDate().format("MMM DD, YYYY, dd")}
-    </div>
-    <div>
-    {new NepaliDate().format("[YYYYescape] YYYY-MM-DD")}
-    </div>
+      <div>{new NepaliDate().format('MMM DD, YYYY, dd')}</div>
+      <div>{new NepaliDate().format('[YYYYescape] YYYY-MM-DD')}</div>
       <button
         onClick={() => {
           function iterateDates(startDate: any, endDate: any) {
@@ -87,15 +76,11 @@ const App = () => {
         onChange={(e) => {
           setValue(e);
         }}
-        type="BS"
         lang="en"
         placeholder="Select date"
-        open
-
-        // converterMode
+        format="dddd, DD MMMM YYYY"
       />
       <NepaliDatePicker
-        // value={value ? new NepaliDate(value) : value}
         type="AD"
         onChange={(e) => {}}
         placeholder="Select date"
