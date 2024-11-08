@@ -9,6 +9,50 @@ import { baishakOne } from './utils/data';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
+
+const App1 = () => {
+  const [value, setValue] = useState<Date | null>(new Date());
+  const [lang, setLang] = useState<'np' | 'en'>('np');
+  return (
+    <div className="flex flex-col gap-2">
+      <NepaliDatePicker
+        value={value}
+        onChange={(e) => setValue(e)}
+        type="AD"
+        placeholder={lang === 'np' ? 'मिति चयन गर्नुहोस्' : 'Select date'}
+        lang={lang}
+        format="dddd, MMMM DD YYYY"
+      />
+      <div className="flex flex-row items-center gap-4">
+        <label htmlFor="np" className="flex flex-row gap-1 items-center">
+          <input
+            type="radio"
+            id="np"
+            value="np"
+            checked={lang === 'np'}
+            onChange={(e) => {
+              setLang(e.target.value as 'np');
+            }}
+          />
+          <span className="text-sm select-none">नेपाली</span>
+        </label>
+        <label htmlFor="en" className="flex flex-row gap-1 items-center">
+          <input
+            type="radio"
+            id="en"
+            value="en"
+            checked={lang === 'en'}
+            onChange={(e) => {
+              setLang(e.target.value as 'en');
+            }}
+          />
+          <span className="text-sm select-none">English</span>
+        </label>
+      </div>
+    </div>
+  );
+};
+
 const App = () => {
   const [value, setValue] = useState<NepaliDate | Date | null>(
     new NepaliDate(),
@@ -18,6 +62,7 @@ const App = () => {
 
   return (
     <div>
+      <App1 />
       <div>{new NepaliDate().format('DD/MM/YYYY')}</div>
       <div>{new NepaliDate().format('YYYY-MM-DD')}</div>
       <div>{new NepaliDate().format('YYYY-M-D')}</div>

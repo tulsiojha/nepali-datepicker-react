@@ -179,7 +179,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
     } else {
       setSelectedDate(null);
     }
-  }, [value]);
+  }, [value, lang, type, format]);
 
   useLayoutEffect(() => {
     inputRef.current?.setSelectionRange(cursorPos.current, cursorPos.current);
