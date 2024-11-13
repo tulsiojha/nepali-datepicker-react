@@ -10,6 +10,14 @@
   position: relative;
 }
 
+.zener-left-0 {
+  left: 0px;
+}
+
+.zener-top-0 {
+  top: 0px;
+}
+
 .zener-z-\[9999999999999999999\] {
   z-index: 9999999999999999999;
 }
@@ -58,6 +66,10 @@
 
 .zener-min-w-\[122px\] {
   min-width: 122px;
+}
+
+.zener-min-w-\[282px\] {
+  min-width: 282px;
 }
 
 .zener-flex-1 {

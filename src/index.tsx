@@ -125,6 +125,7 @@ const App = () => {
         type="AD"
         onChange={() => {}}
         placeholder="Select date"
+        open
         className={() => {
           const cc =
             'zener-p-1 zener-bg-[#020408] zener-rounded focus:zener-ring-1 focus:zener-ring-sky-400 focus-within:zener-ring-1 focus-within:zener-ring-sky-400 zener-w-fit zener-min-w-[122px] zener-min-h-[26px] zener-box-border';

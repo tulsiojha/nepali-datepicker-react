@@ -933,15 +933,11 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
         <Portal
           tabIndex={-1}
           className={cn(
-            'zener-date-picker zener-pointer-events-auto zener-absolute zener-z-[9999999999999999999]',
+            'zener-date-picker zener-pointer-events-auto zener-absolute zener-z-[9999999999999999999] zener-min-w-[282px] zener-left-0 zener-top-0',
             portalClassName || 'zener-font-sans zener-mt-1',
           )}
           style={{
-            left: 0,
-            top: 0,
-            minWidth: 280,
             transform: `translate(${bounds.left}px,${bounds.height + bounds.top}px)`,
-            // maxWidth: 280,
           }}
           ref={portalRef}
         >

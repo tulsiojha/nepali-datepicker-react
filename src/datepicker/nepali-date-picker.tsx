@@ -86,7 +86,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
     } else {
       setSelectedDate(null);
     }
-  }, [value, lang]);
+  }, [value, lang, type, format]);
 
   // set focus on input container
   const setFocus = () => {
