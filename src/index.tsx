@@ -2,9 +2,7 @@ import { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import NepaliDatePicker, { NepaliDate } from './datepicker';
 import { NextIcon, PreviousIcon } from './icons';
-import { getDateFromNumber, stringDateFormatter } from './utils/calendar';
 import { cn } from './utils/commons';
-import { baishakOne } from './utils/data';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -17,8 +15,8 @@ const App1 = () => {
     <div className="flex flex-col gap-2">
       <NepaliDatePicker
         value={value}
-        onChange={(e) => setValue(e)}
         type="AD"
+        onChange={(e) => setValue(e)}
         placeholder={lang === 'np' ? 'मिति चयन गर्नुहोस्' : 'Select date'}
         lang={lang}
         format="dddd, MMMM DD YYYY"
@@ -72,7 +70,7 @@ const App = () => {
       <div>{new NepaliDate().format('[YYYYescape] YYYY-MM-DD')}</div>
       <button
         onClick={() => {
-          function iterateDates(startDate: any, endDate: any) {
+          /* function iterateDates(startDate: any, endDate: any) {
             const currentDate = new Date(startDate);
             const finalDate = new Date(endDate);
 
@@ -94,12 +92,10 @@ const App = () => {
               // Increment date by 1 day
               currentDate.setDate(currentDate.getDate() + 1);
             }
-          }
-
-          const startDate = '1943-04-14';
-          const endDate = '2033-04-13';
-
-          iterateDates(startDate, endDate);
+          } */
+          /* const startDate = '1943-04-14'; */
+          /* const endDate = '2033-04-13'; */
+          /* iterateDates(startDate, endDate); */
         }}
       >
         itetrate
@@ -127,7 +123,7 @@ const App = () => {
       />
       <NepaliDatePicker
         type="AD"
-        onChange={(e) => {}}
+        onChange={() => {}}
         placeholder="Select date"
         open
         className={() => {
