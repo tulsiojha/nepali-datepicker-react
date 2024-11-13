@@ -1,101 +1,10 @@
-import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { AnimationProps } from 'framer-motion';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import NepaliDate, { formatADDate } from '@zener/nepali-date';
 import Menu from './menu';
 import useBounds from '../utils/use-bounds';
-import { cn, formatADDate } from '../utils/commons';
+import { cn } from '../utils/commons';
 import { CloseIcon } from '../icons';
-import { NepaliDate } from '../utils/nepali-date';
-
-export type ISuffixRender = (props: {
-  onClear: () => void;
-  isOpen: boolean;
-  showclear: boolean;
-}) => ReactNode;
-
-export type IDatePickerType = 'BS' | 'AD';
-
-export type ILang = 'np' | 'en';
-
-export type DateTypeMap = {
-  BS: NepaliDate;
-  AD: Date;
-};
-
-export type IComponents = {
-  footer?: (props: {
-    onTodayClick: () => void;
-    todayText: string;
-  }) => ReactNode;
-  header?: (props: {
-    prevClick: () => void;
-    nextClick: () => void;
-    onMonthSelectClicked: () => void;
-    onYearSelectClicked: () => void;
-    prevDisabled: boolean;
-    nextDisabled: boolean;
-    selectionMode: 'day' | 'year' | 'month';
-    monthText: string;
-    monthNumber: number;
-    yearNumber: number;
-    yearText: string;
-    yearRange: { start: number; end: number };
-    yearRangeText: string;
-  }) => ReactNode;
-  date?: (props: {
-    onClick: () => void;
-    dateMonthType: 'current' | 'prev' | 'next';
-    month: number;
-    year: number;
-    isToday: boolean;
-    isSelected: boolean;
-    dateText: string | number;
-    date: number;
-    isDisabled: boolean;
-    weekDay: number;
-  }) => ReactNode;
-  year?: (props: {
-    onClick: () => void;
-    yearText: string | number;
-    yearNumber: number;
-    isDisabled: boolean;
-  }) => ReactNode;
-  month?: (props: {
-    onClick: () => void;
-    monthText: string | number;
-    monthNumber: number;
-    year: number;
-    isDisabled: boolean;
-  }) => ReactNode;
-  week?: (props: { weekText: string; weekNumber: number }) => ReactNode;
-};
-
-export interface IBaseType<T extends keyof DateTypeMap | undefined = 'BS'> {
-  lang?: ILang;
-  type?: T;
-  onChange?: (date: (T extends 'BS' ? NepaliDate : Date) | null) => void;
-  portalClassName?: string;
-  menuContainerClassName?: string;
-  calendarClassName?: string;
-  converterMode?: boolean;
-  components?: IComponents;
-  animation?: null | AnimationProps;
-}
-
-export interface INepaliDatePicker<
-  T extends keyof DateTypeMap | undefined = 'BS',
-> extends IBaseType<T> {
-  open?: boolean;
-  disabled?: boolean;
-  placeholder?: string;
-  prefix?: ReactNode;
-  suffix?: ISuffixRender;
-  showclear?: boolean;
-  value?: NepaliDate | Date | string | null;
-  className?:
-    | string
-    | (() => { focus?: string; disabled?: string; default?: string });
-  format?: string;
-}
+import { DateTypeMap, INepaliDatePicker } from './types';
 
 const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
   type = 'BS',
@@ -126,8 +35,6 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
   const [today, setToday] = useState(
     type === 'BS' ? new NepaliDate() : new Date(),
   );
-
-  const cursorPos = useRef(0);
 
   const { bounds } = useBounds(containerRef, [show, open]);
 
@@ -179,11 +86,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
     } else {
       setSelectedDate(null);
     }
-  }, [value]);
-
-  useLayoutEffect(() => {
-    inputRef.current?.setSelectionRange(cursorPos.current, cursorPos.current);
-  }, [inputValue]);
+  }, [value, lang]);
 
   // set focus on input container
   const setFocus = () => {
@@ -248,7 +151,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
           ref={inputRef}
           type="text"
           disabled={disabled}
-          readOnly={true}
+          readOnly
           onClick={() => {
             if (!disabled) {
               if (!open) {
@@ -351,8 +254,6 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
           onChange?.(e);
           closeMenu();
         }}
-        onNextMonth={() => {}}
-        onPrevMonth={() => {}}
         menuContainerClassName={menuContainerClassName}
         portalClassName={portalClassName}
         calendarClassName={calendarClassName}

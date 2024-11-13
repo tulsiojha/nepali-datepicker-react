@@ -36,8 +36,6 @@ settings:
       extensions: [.js, .jsx, .ts, .tsx, .json]
       moduleDirectory:
         - node_modules
-    jsconfig:
-      config: ./jsconfig.json
     typescript:
       project: ./tsconfig.json
 

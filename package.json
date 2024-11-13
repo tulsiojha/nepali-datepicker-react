@@ -58,6 +58,7 @@
   },
   "dependencies": {
     "@radix-ui/react-portal": "^1.1.1",
+    "@zener/nepali-date": "^1.1.4",
     "classnames": "^2.3.2",
     "framer-motion": "^10.16.4"
   },

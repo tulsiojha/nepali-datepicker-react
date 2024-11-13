@@ -1,7 +1,18 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { RefObject, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Portal } from '@radix-ui/react-portal';
-import { IBounds } from '../utils/use-bounds';
+import NepaliDate, {
+  AD_MONTH,
+  AD_MONTH_NEPALI,
+  ENGLISH_NEPALI_MONTH,
+  ENGLISH_WEEK,
+  NEPALI_MONTH,
+  NEPALI_TODAY,
+  NEPALI_WEEK,
+  lowerADDate,
+  startDateBS,
+  yearMonthDays,
+} from '@zener/nepali-date';
 import {
   getDateFromNumber,
   getDecadeRange,
@@ -19,34 +30,9 @@ import {
   engToNepaliNumber,
   groupArray,
 } from '../utils/commons';
-import {
-  AD_MONTH,
-  AD_MONTH_NEPALI,
-  ENGLISH_NEPALI_MONTH,
-  ENGLISH_WEEK,
-  NEPALI_MONTH,
-  NEPALI_TODAY,
-  NEPALI_WEEK,
-  lowerADDate,
-  startDateBS,
-  yearMonthDays,
-} from '../utils/data';
+
 import { NextIcon, PreviousIcon } from '../icons';
-import { DateTypeMap, IBaseType } from './nepali-date-picker';
-import { NepaliDate } from '../utils/nepali-date';
-
-type ISelectionMode = 'day' | 'month' | 'year';
-
-interface IMenu<T extends keyof DateTypeMap | undefined = 'BS'>
-  extends IBaseType<T> {
-  show: boolean;
-  bounds: IBounds;
-  portalRef: RefObject<HTMLDivElement>;
-  today: NepaliDate | Date;
-  selectedDate?: NepaliDate | Date | null;
-  onNextMonth: () => void;
-  onPrevMonth: () => void;
-}
+import { DateTypeMap, IMenu, ISelectionMode } from './types';
 
 const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
   type,
@@ -55,8 +41,6 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
   portalRef,
   today,
   onChange,
-  onNextMonth,
-  onPrevMonth,
   selectedDate,
   lang,
   menuContainerClassName,
@@ -317,7 +301,6 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
       y = 0;
     }
     changeMonth({ m, y });
-    onPrevMonth?.();
   };
 
   const nextMonth = () => {
@@ -340,7 +323,6 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
     }
 
     changeMonth({ m, y });
-    onNextMonth?.();
   };
 
   const isSelectedDate = (date: number, month: string) => {
@@ -457,7 +439,7 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
       }
     }
 
-    let x = `${padFourNumber(y)}-${padTwo(m + 1)}-${padTwo(date)}`;
+    const x = `${padFourNumber(y)}-${padTwo(m + 1)}-${padTwo(date)}`;
 
     onChange?.(
       // @ts-ignore

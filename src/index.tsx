@@ -2,13 +2,55 @@ import { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import NepaliDatePicker, { NepaliDate } from './datepicker';
 import { NextIcon, PreviousIcon } from './icons';
-import { getDateFromNumber, stringDateFormatter } from './utils/calendar';
 import { cn } from './utils/commons';
-import { baishakOne } from './utils/data';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
+
+const App1 = () => {
+  const [value, setValue] = useState<Date | null>(new Date());
+  const [lang, setLang] = useState<'np' | 'en'>('np');
+  return (
+    <div className="flex flex-col gap-2">
+      <NepaliDatePicker
+        value={value}
+        type="AD"
+        onChange={(e) => setValue(e)}
+        placeholder={lang === 'np' ? 'मिति चयन गर्नुहोस्' : 'Select date'}
+        lang={lang}
+        format="dddd, MMMM DD YYYY"
+      />
+      <div className="flex flex-row items-center gap-4">
+        <label htmlFor="np" className="flex flex-row gap-1 items-center">
+          <input
+            type="radio"
+            id="np"
+            value="np"
+            checked={lang === 'np'}
+            onChange={(e) => {
+              setLang(e.target.value as 'np');
+            }}
+          />
+          <span className="text-sm select-none">नेपाली</span>
+        </label>
+        <label htmlFor="en" className="flex flex-row gap-1 items-center">
+          <input
+            type="radio"
+            id="en"
+            value="en"
+            checked={lang === 'en'}
+            onChange={(e) => {
+              setLang(e.target.value as 'en');
+            }}
+          />
+          <span className="text-sm select-none">English</span>
+        </label>
+      </div>
+    </div>
+  );
+};
+
 const App = () => {
   const [value, setValue] = useState<NepaliDate | Date | null>(
     new NepaliDate(),
@@ -18,6 +60,7 @@ const App = () => {
 
   return (
     <div>
+      <App1 />
       <div>{new NepaliDate().format('DD/MM/YYYY')}</div>
       <div>{new NepaliDate().format('YYYY-MM-DD')}</div>
       <div>{new NepaliDate().format('YYYY-M-D')}</div>
@@ -27,7 +70,7 @@ const App = () => {
       <div>{new NepaliDate().format('[YYYYescape] YYYY-MM-DD')}</div>
       <button
         onClick={() => {
-          function iterateDates(startDate: any, endDate: any) {
+          /* function iterateDates(startDate: any, endDate: any) {
             const currentDate = new Date(startDate);
             const finalDate = new Date(endDate);
 
@@ -49,12 +92,10 @@ const App = () => {
               // Increment date by 1 day
               currentDate.setDate(currentDate.getDate() + 1);
             }
-          }
-
-          const startDate = '1943-04-14';
-          const endDate = '2033-04-13';
-
-          iterateDates(startDate, endDate);
+          } */
+          /* const startDate = '1943-04-14'; */
+          /* const endDate = '2033-04-13'; */
+          /* iterateDates(startDate, endDate); */
         }}
       >
         itetrate
@@ -82,7 +123,7 @@ const App = () => {
       />
       <NepaliDatePicker
         type="AD"
-        onChange={(e) => {}}
+        onChange={() => {}}
         placeholder="Select date"
         className={() => {
           const cc =
