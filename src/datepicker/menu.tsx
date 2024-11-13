@@ -549,9 +549,10 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                                 'zener-text-sm zener-flex zener-items-center zener-justify-center zener-h-[28px] zener-rounded',
 
                                 {
-                                  'group-hover:zener-bg-gray-100 zener-text-black':
+                                  'group-hover:zener-bg-menu-container-item-hover':
                                     !monthDisabled,
-                                  'zener-text-gray-300': monthDisabled,
+                                  'zener-text-menu-container-text-disabled':
+                                    monthDisabled,
                                 },
                               )}
                             >
@@ -645,9 +646,10 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                               className={cn(
                                 'zener-text-sm zener-flex zener-items-center zener-justify-center zener-h-[28px] zener-rounded',
                                 {
-                                  'group-hover:zener-bg-gray-100 zener-text-black':
+                                  'group-hover:zener-bg-menu-container-item-hover':
                                     !yearDisabled,
-                                  'zener-text-gray-300': yearDisabled,
+                                  'zener-text-menu-container-text-disabled':
+                                    yearDisabled,
                                 },
                               )}
                             >
@@ -730,7 +732,7 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
         return (
           <>
             <thead>
-              <tr className="zener-text-sm zener-text-black">
+              <tr className="zener-text-sm">
                 {(lang === 'en' ? ENGLISH_WEEK : NEPALI_WEEK).map(
                   (week, index) => (
                     <th key={week}>
@@ -797,19 +799,17 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                                 className={cn(
                                   'zener-text-sm zener-flex zener-items-center zener-justify-center zener-h-[28px] zener-w-[28px] zener-rounded',
                                   {
-                                    'zener-text-gray-300':
+                                    'zener-text-menu-container-text-disabled':
                                       dd.month !== 'current' || dayDisabled,
-                                    'zener-text-black':
-                                      dd.month === 'current' && !dayDisabled,
-                                    'zener-border zener-border-solid zener-box-border zener-border-[#1D2275] ':
+                                    'zener-border zener-border-solid zener-box-border zener-border-menu-container-text-border':
                                       isToday &&
                                       dd.month === 'current' &&
                                       !dayDisabled,
-                                    'zener-bg-[#1D2275] zener-text-white zener-transition-none':
+                                    'zener-bg-menu-container-text-selected-bg zener-text-menu-container-text-selected zener-transition-none':
                                       isSelected &&
                                       dd.month === 'current' &&
                                       !dayDisabled,
-                                    'group-hover:zener-bg-gray-100':
+                                    'group-hover:zener-bg-menu-container-item-hover':
                                       !isSelected && !dayDisabled,
                                   },
                                 )}
@@ -840,7 +840,7 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
   const getYearRange = useMemo(() => {
     const yearRange = `${padFourNumber(getDecadeRange(currentYearRangeIndex).start)}-${padFourNumber(getDecadeRange(currentYearRangeIndex).end)}`;
     return lang === 'en' ? yearRange : engToNepNumberFullDate(yearRange);
-  }, [currentYearRangeIndex]);
+  }, [currentYearRangeIndex, lang]);
 
   const isPrevDisabled = () => {
     switch (selectionMode) {
@@ -958,7 +958,7 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
             className={cn(
               'zener-overflow-hidden zener-h-full',
               menuContainerClassName ||
-                'zener-bg-white zener-rounded-md zener-shadow-menu',
+                'zener-bg-menu-container-bg zener-rounded-md zener-shadow-menu zener-text-menu-container-text',
             )}
           >
             {components?.header ? (
@@ -978,10 +978,10 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                 yearRangeText: getYearRange,
               })
             ) : (
-              <div className="zener-flex zener-flex-row zener-items-center zener-text-sm zener-justify-between zener-py-2 zener-border-0 zener-border-b zener-border-b-gray-300 zener-border-solid">
+              <div className="zener-flex zener-flex-row zener-items-center zener-text-sm zener-justify-between zener-py-2 zener-border-0 zener-border-b zener-border-b-menu-container-top-bottom-border zener-border-solid">
                 <button
                   className={cn(
-                    'month-prev-button zener-p-2 zener-text-gray-400 hover:zener-text-black disabled:zener-text-gray-200',
+                    'month-prev-button zener-p-2 zener-text-menu-header-icon hover:zener-text-menu-header-icon-hover disabled:zener-text-menu-header-icon-disabled',
                     {
                       'zener-cursor-pointer': !isPrevDisabled(),
                       '!zener-cursor-default': isPrevDisabled(),
@@ -998,7 +998,7 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                     {selectionMode === 'day' && (
                       <button
                         tabIndex={-1}
-                        className="zener-py-1 zener-px-1.5 zener-rounded zener-cursor-pointer zener-text-black hover:zener-bg-gray-100"
+                        className="zener-py-1 zener-px-1.5 zener-rounded zener-cursor-pointer hover:zener-bg-menu-container-item-hover"
                         onClick={onMonthSelectClicked}
                       >
                         {getHeaderMonthText()}
@@ -1006,7 +1006,7 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                     )}
                     <button
                       tabIndex={-1}
-                      className="zener-py-1 zener-px-1.5 zener-rounded zener-cursor-pointer zener-text-black hover:zener-bg-gray-100"
+                      className="zener-py-1 zener-px-1.5 zener-rounded zener-cursor-pointer hover:zener-bg-menu-container-item-hover"
                       onClick={onYearSelectClicked}
                     >
                       {getHeaderYearText()}
@@ -1014,13 +1014,13 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                   </div>
                 )}
                 {selectionMode === 'year' && (
-                  <div className="zener-cursor-default zener-font-semibold zener-flex zener-flex-row zener-items-center zener-text-black">
+                  <div className="zener-cursor-default zener-font-semibold zener-flex zener-flex-row zener-items-center">
                     {getYearRange}
                   </div>
                 )}
                 <button
                   className={cn(
-                    'month-next-button zener-p-2 zener-text-gray-400 hover:zener-text-black disabled:zener-text-gray-200',
+                    'month-next-button zener-p-2 zener-text-menu-header-icon hover:zener-text-menu-header-icon-hover disabled:zener-text-menu-header-icon-disabled',
                     {
                       'zener-cursor-pointer': !isNextDisabled(),
                       '!zener-cursor-default': isNextDisabled(),
@@ -1045,9 +1045,9 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                 todayText,
               })
             ) : (
-              <div className="zener-flex zener-flex-row zener-items-center zener-justify-center zener-border-0 zener-border-t zener-border-solid zener-border-t-gray-300">
+              <div className="zener-flex zener-flex-row zener-items-center zener-justify-center zener-border-0 zener-border-t zener-border-solid zener-border-t-menu-container-top-bottom-border">
                 <button
-                  className="zener-text-[#1D2275] zener-font-normal !zener-text-sm zener-p-2 hover:zener-text-black"
+                  className="zener-text-menu-footer-today zener-font-normal !zener-text-sm zener-p-2 hover:zener-text-menu-footer-today-hover"
                   onClick={selectToday}
                 >
                   {todayText}

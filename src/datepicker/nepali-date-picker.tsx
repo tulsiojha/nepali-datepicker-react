@@ -125,13 +125,13 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
         className={cn(
           'zener-relative zener-flex zener-flex-row zener-items-center',
           {
-            'zener-text-black/25 zener-bg-black/5 zener-border-stone-100':
+            'zener-text-input-disabled-text zener-bg-input-disabled-bg zener-border-input-disabled-border':
               !className && !!disabled,
           },
           className && typeof className === 'function'
             ? `${disabled ? className().disabled : className().default}`
             : className ||
-                `${!disabled ? 'focus:zener-ring-1 focus:zener-ring-blue-400 focus-within:zener-ring-1 focus-within:zener-ring-blue-400' : ''} zener-font-sans zener-bg-white zener-text-sm zener-px-2 zener-py-0.5 zener-border-solid zener-border zener-border-stone-200 zener-rounded zener-min-w-[122px] zener-outline-none zener-w-full zener-text-black`,
+                `${!disabled ? 'focus:zener-ring-1 focus:zener-ring-input-focus-ring focus-within:zener-ring-1 focus-within:zener-ring-input-focus-ring' : ''} zener-font-sans zener-bg-input-bg zener-text-sm zener-px-2 zener-py-0.5 zener-border-solid zener-border zener-border-input-border zener-rounded zener-min-w-[122px] zener-outline-none zener-w-full zener-text-input-text`,
         )}
         onFocus={() => {
           if (disabled) {
