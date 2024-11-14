@@ -145,7 +145,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
       >
         {prefix && <div>{prefix}</div>}
         <input
-          className="zener-outline-none zener-border-0 zener-w-fit zener-bg-transparent zener-flex-1 zener-text-inherit zener-min-h-[24px]"
+          className="zener-outline-none focus-visible:zener-outline-none focus:zener-outline-none focus-within:zener-outline-none zener-border-0 zener-w-fit zener-bg-transparent zener-flex-1 zener-text-inherit zener-min-h-[24px]"
           size={10}
           tabIndex={0}
           ref={inputRef}
