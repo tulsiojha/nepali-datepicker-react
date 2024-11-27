@@ -49,6 +49,8 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
   components,
   converterMode,
   animation,
+  max,
+  min,
 }: IMenu<T>) => {
   const [selectionMode, setSelectionMode] = useState<ISelectionMode>('day');
   const [currentYearRangeIndex, setCurrentYearRangeIndex] = useState(0);
@@ -471,6 +473,30 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
         };
 
         const isMonthDisabled = (month: number) => {
+          if (!selectedMonthYear) {
+            return true;
+          }
+
+          if (min) {
+            if (
+              (selectedMonthYear?.year === min.getFullYear() &&
+                month < min.getMonth()) ||
+              selectedMonthYear?.year < min.getFullYear()
+            ) {
+              return true;
+            }
+          }
+
+          if (max) {
+            if (
+              (selectedMonthYear?.year === max.getFullYear() &&
+                month > max.getMonth()) ||
+              selectedMonthYear?.year > max.getFullYear()
+            ) {
+              return true;
+            }
+          }
+
           if (!converterMode) {
             return false;
           }
@@ -587,11 +613,24 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
         };
 
         const isYearDisabled = (year: number) => {
-          if (type === 'AD' && !converterMode) {
-            return year < 1;
+          if (min) {
+            if (year < min.getFullYear()) {
+              return true;
+            }
           }
+
+          if (max) {
+            if (year > max.getFullYear()) {
+              return true;
+            }
+          }
+
           if (type === 'BS') {
             return false;
+          }
+
+          if (type === 'AD' && !converterMode) {
+            return year < 1;
           }
           if (
             year < adDateRangeForConverter.start.year ||
@@ -677,6 +716,33 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
         ) => {
           if (!selectedMonthYear) {
             return true;
+          }
+
+          if (min) {
+            if (
+              (selectedMonthYear?.year === min.getFullYear() &&
+                selectedMonthYear?.month === min.getMonth() &&
+                ((day < min.getDate() && month !== 'next') ||
+                  month === 'prev')) ||
+              (selectedMonthYear.month < min.getMonth() &&
+                selectedMonthYear.year === min.getFullYear()) ||
+              selectedMonthYear.year < min.getFullYear()
+            ) {
+              return true;
+            }
+          }
+          if (max) {
+            if (
+              (selectedMonthYear?.year === max.getFullYear() &&
+                selectedMonthYear?.month === max.getMonth() &&
+                ((day > max.getDate() && month !== 'prev') ||
+                  month === 'next')) ||
+              (selectedMonthYear.month > max.getMonth() &&
+                selectedMonthYear.year === max.getFullYear()) ||
+              selectedMonthYear.year > max.getFullYear()
+            ) {
+              return true;
+            }
           }
 
           if (type === 'BS') {
@@ -809,6 +875,10 @@ const Menu = <T extends keyof DateTypeMap | undefined = 'BS'>({
                                       isSelected &&
                                       dd.month === 'current' &&
                                       !dayDisabled,
+                                    'zener-bg-menu-container-text-selected-disabled-bg zener-text-menu-container-text-selected-disabled zener-transition-none':
+                                      isSelected &&
+                                      dd.month === 'current' &&
+                                      dayDisabled,
                                     'group-hover:zener-bg-menu-container-item-hover':
                                       !isSelected && !dayDisabled,
                                   },

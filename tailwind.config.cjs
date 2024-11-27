@@ -16,8 +16,12 @@ module.exports = {
       'menu-container-text-border': 'var(--zener-menu-container-text-border)',
       'menu-container-text-selected':
         'var(--zener-menu-container-text-selected)',
+      'menu-container-text-selected-disabled':
+        'var(--zener-menu-container-text-selected-disabled)',
       'menu-container-text-selected-bg':
         'var(--zener-menu-container-text-selected-bg)',
+      'menu-container-text-selected-disabled-bg':
+        'var(--zener-menu-container-text-selected-disabled-bg)',
       'menu-container-item-hover': 'var(--zener-menu-container-item-hover)',
       'menu-container-text-disabled':
         'var(--zener-menu-container-text-disabled)',
