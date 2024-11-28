@@ -46,10 +46,6 @@
   min-height: 24px;
 }
 
-.zener-min-h-\[26px\] {
-  min-height: 26px;
-}
-
 .zener-w-\[28px\] {
   width: 28px;
 }
@@ -160,11 +156,6 @@
   border-top-color: var(--zener-menu-container-top-bottom-border);
 }
 
-.zener-bg-\[\#020408\] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(2 4 8 / var(--tw-bg-opacity));
-}
-
 .zener-bg-input-bg {
   background-color: var(--zener-input-bg);
 }
@@ -179,6 +170,10 @@
 
 .zener-bg-menu-container-text-selected-bg {
   background-color: var(--zener-menu-container-text-selected-bg);
+}
+
+.zener-bg-menu-container-text-selected-disabled-bg {
+  background-color: var(--zener-menu-container-text-selected-disabled-bg);
 }
 
 .zener-bg-transparent {
@@ -248,10 +243,6 @@
   font-weight: 600;
 }
 
-.zener-font-thin {
-  font-weight: 100;
-}
-
 .zener-text-inherit {
   color: inherit;
 }
@@ -274,6 +265,10 @@
 
 .zener-text-menu-container-text-selected {
   color: var(--zener-menu-container-text-selected);
+}
+
+.zener-text-menu-container-text-selected-disabled {
+  color: var(--zener-menu-container-text-selected-disabled);
 }
 
 .zener-text-menu-footer-today {
@@ -523,7 +518,9 @@
   --zener-menu-container-bg: #ffffff;
   --zener-menu-container-text: #000000;
   --zener-menu-container-text-selected: #ffffff;
+  --zener-menu-container-text-selected-disabled: #ffffff;
   --zener-menu-container-text-selected-bg: #1d2275;
+  --zener-menu-container-text-selected-disabled-bg: #d8d8d8;
   --zener-menu-container-text-border: #1d2275;
   --zener-menu-container-item-hover: #f3f4f6;
   --zener-menu-container-text-disabled: #d1d5db;

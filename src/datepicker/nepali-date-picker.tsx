@@ -25,6 +25,8 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
   converterMode,
   animation,
   format = 'YYYY-MM-DD',
+  max,
+  min,
 }: INepaliDatePicker<T>) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -261,6 +263,8 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
         type={type}
         converterMode={converterMode}
         animation={animation}
+        max={max}
+        min={min}
       />
     </div>
   );

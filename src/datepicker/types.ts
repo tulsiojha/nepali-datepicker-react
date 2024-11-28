@@ -75,6 +75,8 @@ export interface IBaseType<T extends keyof DateTypeMap | undefined = 'BS'> {
   calendarClassName?: string;
   converterMode?: boolean;
   components?: IComponents;
+  min?: T extends 'BS' ? NepaliDate : Date;
+  max?: T extends 'BS' ? NepaliDate : Date;
   animation?: null | AnimationProps;
 }
 
