@@ -236,6 +236,7 @@ const NepaliDatePicker = <T extends keyof DateTypeMap | undefined = 'BS'>({
                 }}
                 tabIndex={-1}
                 className="zener-cursor-pointer zener-outline-none zener-border-0 zener-opacity-80 hover:zener-opacity-100 zener-transition-all zener-bg-transparent zener-flex zener-items-center zener-justify-center zener-text-inherit"
+                type="button"
               >
                 <CloseIcon size={16} />
               </button>
