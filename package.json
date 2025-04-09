@@ -2,7 +2,7 @@
   "name": "@zener/nepali-datepicker-react",
   "author": "Bikash Ojha",
   "license": "MIT",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Nepali Datepicker React is a lightweight, highly customizable, and feature-rich datepicker component, specifically designed for handling Nepali dates in React.js applications. It offers seamless integration, intuitive user experience, and extensive configuration options.",
   "private": false,
   "types": "./dist/index.d.ts",
@@ -42,11 +42,7 @@
     "AD",
     "BS"
   ],
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
+  "files": ["dist", "README.md", "LICENSE"],
   "publishConfig": {
     "access": "public"
   },
@@ -99,11 +95,7 @@
     "typescript": "^5.2.2"
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
+    "production": [">0.2%", "not dead", "not op_mini all"],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
